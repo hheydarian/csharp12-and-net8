@@ -573,3 +573,291 @@ Namespace: None!
 ```
 
 ۴. برای بستن پنجره برنامه کنسول و بازگشت به Visual Studio، کلیدی را فشار دهید.
+
+---
+
+### افزودن دومین پروژه با استفاده از Visual Studio 2022
+
+بیایید یک پروژه دوم به Solution (سولوشن) خود اضافه کنیم تا نحوه کار با چندین پروژه را بررسی کنیم:
+
+۱. در Visual Studio، به مسیر **File | Add | New Project…** بروید.
+
+> **هشدار!**
+> مرحله فوق یک پروژه جدید را به Solution موجود اضافه می‌کند. به مسیر **File | New | Project…** نروید، زیرا این گزینه برای ایجاد یک پروژه و Solution جدید استفاده می‌شود (اگرچه کادر محاوره‌ای آن یک منوی کشویی برای انتخاب افزودن به Solution موجود نیز دارد).
+
+۲. در کادر محاوره‌ای **Add a new project**، در بخش **Recent project templates**، گزینه **Console App [C#]** را انتخاب کرده و سپس روی **Next** کلیک کنید.
+
+۳. در کادر محاوره‌ای **Configure your new project**، برای **Project name**، نام `AboutMyEnvironment` را وارد کنید، **Location** را همان `C:\cs12dotnet8\Chapter01` باقی بگذارید و سپس روی **Next** کلیک کنید.
+
+۴. در کادر محاوره‌ای **Additional information**، گزینه **.NET 8.0 (Long Term Support)** را انتخاب کرده و تیک گزینه **Do not use top-level statements** را بزنید.
+
+> **هشدار!**
+> اطمینان حاصل کنید که تیک گزینه **Do not use top-level statements** را زده‌اید تا بتوانیم سبک قدیمی‌تر `Program.cs` را مشاهده کنیم.
+
+۵. روی **Create** کلیک کنید.
+
+۶. در پروژه `AboutMyEnvironment`، در فایل `Program.cs`، به دستوراتی که یک `namespace` مطابق با نام پروژه، یک کلاس `internal` به نام `Program`، و یک متد `static` به نام `Main` با پارامتری به نام `args` که هیچ مقداری برنمی‌گرداند (`void`) تعریف می‌کنند، توجه کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+namespace AboutMyEnvironment
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Hello, World!");
+        }
+    }
+}
+```
+
+۷. در `Program.cs`، در متد `Main`، دستور `Console.WriteLine` موجود را با دستوراتی برای چاپ دایرکتوری فعلی، نسخه سیستم‌عامل، و فضای نام کلاس `Program` جایگزین کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+Console.WriteLine(Environment.CurrentDirectory);
+Console.WriteLine(Environment.OSVersion.VersionString);
+Console.WriteLine("Namespace: {0}", typeof(Program).Namespace);
+```
+
+۸. در **Solution Explorer**، روی Solutionِ **'Chapter01'** راست‌کلیک کرده و سپس **Configure Startup Projects…** را انتخاب کنید.
+
+۹. در کادر محاوره‌ای **Solution ‘Chapter01’ Property Pages**، مقدار **Startup Project** را روی **Current selection** تنظیم کرده و سپس روی **OK** کلیک کنید.
+
+۱۰. در **Solution Explorer**، روی پروژه `AboutMyEnvironment` (یا هر فایل یا پوشه‌ای درون آن) کلیک کنید، و توجه داشته باشید که Visual Studio با پررنگ (bold) کردن نام پروژه، نشان می‌دهد که `AboutMyEnvironment` اکنون پروژه آغازین (startup project) است.
+
+> **تمرین خوب:**
+> من این روش تنظیم پروژه آغازین را توصیه می‌کنم زیرا جابجایی بین پروژه‌های آغازین را بسیار آسان می‌کند؛ تنها با کلیک کردن روی یک پروژه (یا هر فایلی در یک پروژه) آن را به پروژه آغازین تبدیل می‌کنید. اگرچه می‌توانید روی یک پروژه راست‌کلیک کرده و آن را به عنوان پروژه آغازین تنظیم کنید، اما اگر بخواهید پروژه دیگری را اجرا کنید، باید دوباره آن را به صورت دستی تغییر دهید. کلیک کردن ساده در هر جای پروژه آسان‌تر است. در اکثر فصل‌ها، شما فقط نیاز به اجرای یک پروژه در هر زمان خواهید داشت. در فصل ۱۴، *ساخت و مصرف وب‌سرویس‌ها*، به شما نشان خواهم داد که چگونه چندین پروژه آغازین را پیکربندی کنید.
+
+۱۱. به مسیر **Debug | Start Without Debugging** بروید تا پروژه `AboutMyEnvironment` را اجرا کنید، و به نتیجه توجه کنید، همان‌طور که در خروجی زیر و در شکل ۱.۹ نشان داده شده است:
+
+```text
+C:\cs12dotnet8\Chapter01\AboutMyEnvironment\bin\Debug\net8.0
+Microsoft Windows NT 10.0.22621.0
+Namespace: AboutMyEnvironment
+```
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/01/10.png)
+</div>
+
+ویندوز ۱۱ صرفاً یک نام تجاری است. نام رسمی آن Windows NT است و شماره نسخه اصلی آن هنوز ۱۰ است! اما نسخه پچ (Patch version) آن ۲۲۰۰۰ یا بالاتر است.
+
+۱۲. هر کلیدی را فشار دهید تا پنجره برنامه کنسول بسته شود و به Visual Studio بازگردید.
+
+هنگامی که از Visual Studio 2022 برای ویندوز جهت اجرای یک برنامه کنسول استفاده می‌کنید، برنامه را از پوشه `<projectname>\bin\Debug\net8.0` اجرا می‌کند. مهم است که این موضوع را زمانی که در فصل‌های بعدی با فایل‌سیستم کار می‌کنیم، به خاطر بسپارید. هنگامی که از Visual Studio Code، یا دقیق‌تر بگوییم، از `dotnet CLI` استفاده می‌کنید، رفتار متفاوتی دارد، همان‌طور که در شرف دیدن آن هستید.
+
+---
+
+### ساخت برنامه‌های کنسول با استفاده از Visual Studio Code
+
+هدف این بخش، نمایش نحوه ساخت یک برنامه کنسول با استفاده از Visual Studio Code و `dotnet CLI` است.
+
+اگر هرگز نمی‌خواهید Visual Studio Code یا ابزار خط فرمان dotnet را امتحان کنید، لطفاً با خیال راحت از این بخش بگذرید و سپس با بخش *استفاده مفید از مخزن GitHub برای این کتاب* ادامه دهید.
+دستورالعمل‌ها و تصاویر این بخش برای ویندوز هستند، اما اقدامات مشابه با Visual Studio Code در انواع macOS و لینوکس نیز کار خواهند کرد. تفاوت‌های اصلی مربوط به اقدامات بومی خط فرمان مانند حذف یک فایل خواهد بود: هم دستور و هم مسیر احتمالاً در ویندوز یا macOS و لینوکس متفاوت است. خوشبختانه، خود ابزار `dotnet CLI` و دستورات آن در تمام پلتفرم‌ها یکسان هستند.
+
+#### نوشتن کد با استفاده از Visual Studio Code
+
+بیایید نوشتن کد را شروع کنیم!
+
+۱. ابزار مورد علاقه خود برای کار با فایل‌سیستم را باز کنید، برای مثال File Explorer در ویندوز یا Finder در مک.
+
+۲. به درایو `C:` خود در ویندوز، پوشه کاربری خود در macOS یا لینوکس (مال من `markjprice` و `home/markjprice` نام دارد)، یا هر دایرکتوری یا درایوی که می‌خواهید پروژه‌های خود را در آن ذخیره کنید، بروید.
+
+۳. یک پوشه جدید به نام `cs12dotnet8` ایجاد کنید. (اگر بخش مربوط به Visual Studio 2022 را تکمیل کرده‌اید، این پوشه از قبل وجود دارد.)
+
+۴. در پوشه `cs12dotnet8`، یک پوشه جدید به نام `Chapter01-vscode` ایجاد کنید.
+
+> اگر بخش مربوط به Visual Studio 2022 را تکمیل نکرده‌اید، می‌توانید نام این پوشه را `Chapter01` بگذارید، اما من فرض می‌کنم که می‌خواهید هر دو بخش را تکمیل کنید و بنابراین نیاز به استفاده از یک نام غیرتکراری دارید.
+
+۵. در پوشه `Chapter01-vscode`، خط فرمان (command prompt) یا ترمینال را باز کنید. برای مثال، در ویندوز، روی پوشه راست‌کلیک کرده و سپس **Open in Terminal** را انتخاب کنید.
+
+۶. در خط فرمان یا ترمینال، از `dotnet CLI` برای ایجاد یک Solution جدید به نام `Chapter01` استفاده کنید، همان‌طور که در دستور زیر نشان داده شده است:
+
+```bash
+dotnet new sln --name Chapter01
+```
+
+> شما می‌توانید از سوئیچ `-n` یا `--name` برای تعیین نام استفاده کنید. پیش‌فرض با نام پوشه مطابقت خواهد داشت، برای مثال `Chapter01-vscode`.
+
+۷. به نتیجه توجه کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+The template "Solution File" was created successfully.
+```
+
+۸. در خط فرمان یا ترمینال، از `dotnet CLI` برای ایجاد یک زیرپوشه و پروژه جدید برای یک برنامه کنسول به نام `HelloCS` استفاده کنید، همان‌طور که در دستور زیر نشان داده شده است:
+
+```bash
+dotnet new console --output HelloCS
+```
+
+> شما می‌توانید از سوئیچ `-o` یا `--output` برای تعیین نام پوشه و پروژه استفاده کنید. دستور `dotnet new console` به طور پیش‌فرض آخرین نسخه .NET SDK شما را هدف قرار می‌دهد. برای هدف قرار دادن یک نسخه متفاوت، از سوئیچ `-f` یا `--framework` برای تعیین فریم‌ورک هدف استفاده کنید. برای مثال، برای هدف قرار دادن .NET 6، از دستور زیر استفاده کنید:
+> `dotnet new console -f net6.0`
+
+۹. در خط فرمان یا ترمینال، از `dotnet CLI` برای افزودن پروژه به Solution استفاده کنید، همان‌طور که در دستور زیر نشان داده شده است:
+
+```bash
+dotnet sln add HelloCS
+```
+
+۱۰. به نتایج توجه کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+Project `HelloCS\HelloCS.csproj` added to the solution.
+```
+
+۱۱. در خط فرمان یا ترمینال، Visual Studio Code را اجرا کرده و پوشه جاری که با `.` (نقطه) مشخص شده است را باز کنید، همان‌طور که در دستور زیر نشان داده شده است:
+
+```bash
+code .
+```
+
+۱۲. اگر با پیام *?Do you trust the authors of the files in this folder* مواجه شدید، تیک گزینه **Trust the authors of all files in the parent folder ‘cs12dotnet8’** را بزنید و سپس روی **Yes, I trust the authors** کلیک کنید.
+
+۱۳. در Visual Studio Code، در بخش **EXPLORER**، در نمای پوشه **CHAPTER01-VSCODE**، پوشه `HelloCS` را باز کنید (expand)، و خواهید دید که ابزار خط فرمان dotnet دو فایل `HelloCS.csproj` و `Program.cs`، و پوشه‌های `bin` و `obj` را ایجاد کرده است، همان‌طور که در شکل ۱.۱۰ نشان داده شده است.
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/01/11.png)
+</div>
+
+۱۴. به مسیر **View | Output** بروید.
+
+۱۵. در قاب **OUTPUT**، گزینه **C# Dev Kit** را انتخاب کنید و توجه داشته باشید که ابزار، Solution را شناسایی و پردازش کرده است، همان‌طور که در شکل ۱.۱۱ نشان داده شده است:
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/01/12.png)
+</div>
+
+۱۶. در پایین بخش **EXPLORER**، به **SOLUTION EXPLORER** توجه کنید.
+
+۱۷. **SOLUTION EXPLORER** را بگیرید و به بالای قاب **EXPLORER** بکشید و آن را باز (expand) کنید.
+
+۱۸. در **SOLUTION EXPLORER**، پروژه `HelloCS` را باز کنید و سپس روی فایلی به نام `Program.cs` کلیک کنید تا در پنجره ویرایشگر باز شود.
+
+۱۹. در `Program.cs`، خط ۲ را تغییر دهید تا متنی که در کنسول نوشته می‌شود بگوید: `!Hello, C#`.
+
+> **تمرین خوب:**
+> به مسیر **File | Auto Save** بروید. فعال‌سازی این گزینه (toggle) شما را از دردسرِ به یاد داشتنِ ذخیره کردنِ فایل‌ها پیش از هر بار بازسازی (rebuild) برنامه نجات می‌دهد.
+
+#### کامپایل و اجرای کد با استفاده از dotnet CLI
+
+وظیفه بعدی کامپایل و اجرای کد است:
+
+۱. در **SOLUTION EXPLORER**، روی هر فایلی در پروژه `HelloCS` راست‌کلیک کرده و **Open In Integrated Terminal** را انتخاب کنید.
+
+۲. در **TERMINAL**، دستور زیر را وارد کنید: `dotnet run`.
+
+۳. خروجی در پنجره **TERMINAL** نتیجه اجرای برنامه شما را نشان خواهد داد، همان‌طور که در شکل ۱.۱۲ دیده می‌شود:
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/01/13.png)
+</div>
+
+۴. در `Program.cs`، بعد از دستوری که پیام را چاپ می‌کند، دستوراتی اضافه کنید تا نامِ فضای نام (namespace) کلاس `Program` را بگیرد، آن را در کنسول بنویسد، و سپس یک استثنای (exception) جدید پرتاب کند، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+string name = typeof(Program).Namespace ?? "None!";
+Console.WriteLine($"Namespace: {name}");
+throw new Exception();
+```
+
+۵. در **TERMINAL**، دستور زیر را وارد کنید: `dotnet run`.
+
+> در **TERMINAL**، می‌توانید کلیدهای جهت‌نمای بالا و پایین را فشار دهید تا بین دستورات قبلی پیمایش کنید و سپس قبل از زدن Enter برای اجرای آن‌ها، با کلیدهای چپ و راست دستور را ویرایش کنید.
+
+۶. خروجی در پنجره **TERMINAL** نتیجه اجرای برنامه شما را نشان می‌دهد، از جمله اینکه یک کلاس `Program` مخفی توسط کامپایلر تعریف شده است که متدی به نام `$` دارد (که پارامتری به نام `args` برای دریافت آرگومان‌ها دارد)، و اینکه این کلاس فاقد فضای نام (namespace) است، همان‌طور که در خروجی زیر مشاهده می‌کنید:
+
+```text
+Hello, C#!
+Namespace: None!
+Unhandled exception. System.Exception: Exception of type 'System.Exception' was thrown.
+at Program.$(String[] args) in C:\cs12dotnet8\Chapter01-vscode\HelloCS\Program.cs:line 7
+```
+
+---
+
+### افزودن دومین پروژه با استفاده از Visual Studio Code
+
+بیایید پروژه دومی اضافه کنیم تا نحوه کار با چندین پروژه را بررسی کنیم:
+
+۱. در **TERMINAL**، با دستور زیر به دایرکتوری `Chapter01-vscode` تغییر مسیر دهید:
+
+```bash
+cd ..
+```
+
+۲. در **TERMINAL**، دستور زیر را وارد کنید تا یک پروژه برنامه کنسول جدید به نام `AboutMyEnvironment` با استفاده از سبک قدیمی‌تر (غیر top-level) ایجاد کنید:
+
+```bash
+dotnet new console -o AboutMyEnvironment --use-program-main
+```
+
+> **تمرین خوب:**
+> هنگام وارد کردن دستورات در **TERMINAL** مراقب باشید. پیش از وارد کردن دستوراتی که ممکن است مخرب باشند، مطمئن شوید که در پوشه صحیح قرار دارید!
+
+۳. در **TERMINAL**، از `dotnet CLI` برای افزودن پوشه پروژه جدید به Solution استفاده کنید:
+
+```bash
+dotnet sln add AboutMyEnvironment
+```
+
+۴. به نتایج توجه کنید:
+
+```text
+Project `AboutMyEnvironment\AboutMyEnvironment.csproj` added to the solution.
+```
+
+۵. در **SOLUTION EXPLORER**، در پروژه `AboutMyEnvironment`، فایل `Program.cs` را باز کنید و سپس در متد `Main`، دستور موجود را تغییر دهید تا دایرکتوری فعلی، رشته نسخه سیستم‌عامل، و فضای نام کلاس `Program` را چاپ کند:
+
+```csharp
+Console.WriteLine(Environment.CurrentDirectory);
+Console.WriteLine(Environment.OSVersion.VersionString);
+Console.WriteLine("Namespace: {0}", typeof(Program).Namespace);
+```
+
+۶. در **SOLUTION EXPLORER**، روی هر فایلی در پروژه `AboutMyEnvironment` راست‌کلیک کرده و **Open In Integrated Terminal** را انتخاب کنید.
+
+۷. در **TERMINAL**، دستور زیر را برای اجرای پروژه وارد کنید: `dotnet run`.
+
+۸. به خروجی در پنجره **TERMINAL** توجه کنید، همان‌طور که در زیر و در شکل ۱.۱۳ نشان داده شده است:
+
+```text
+C:\cs12dotnet8\Chapter01-vscode\AboutMyEnvironment
+Microsoft Windows NT 10.0.22621.0
+Namespace: AboutMyEnvironment
+```
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/01/14.png)
+</div>
+
+> وقتی چندین پنجره ترمینال باز می‌کنید، می‌توانید با کلیک روی نام آن‌ها در پنل سمت راستِ **TERMINAL**، بین آن‌ها جابجا شوید. به‌صورت پیش‌فرض، نام آن‌ها یکی از پوسته‌های رایج مانند pwsh ،powershell ،zsh یا bash خواهد بود. می‌توانید راست‌کلیک کرده و **Rename** را انتخاب کنید تا نام دیگری تنظیم کنید.
+
+هنگام استفاده از Visual Studio Code، یا دقیق‌تر بگویم، استفاده از `dotnet CLI` برای اجرای یک برنامه کنسول، برنامه از پوشه `<projectname>` اجرا می‌شود. اما هنگام استفاده از Visual Studio 2022 برای ویندوز، برنامه از پوشه `<projectname>\bin\Debug\net8.0` اجرا می‌شود.
+بسیار مهم است که وقتی در فصل‌های بعدی با فایل‌سیستم کار می‌کنیم، این نکته را به خاطر بسپارید.
+
+اگر قرار بود برنامه را روی macOS Ventura اجرا کنید، سیستم‌عامل محیط متفاوت بود، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+Unix 13.5.2
+```
+
+> **تمرین خوب:**
+> اگرچه کد منبع، مانند فایل‌های `.csproj` و `.cs` یکسان است، اما پوشه‌های `bin` و `obj` که به‌طور خودکار توسط کامپایلر تولید می‌شوند، ممکن است عدم تطابق‌هایی داشته باشند که منجر به خطا شود. اگر می‌خواهید یک پروژه واحد را هم در Visual Studio 2022 و هم در Visual Studio Code باز کنید، قبل از باز کردن پروژه در ویرایشگر دیگر، پوشه‌های موقت `bin` و `obj` را حذف کنید. این مشکل احتمالی دلیلی است که از شما خواستم در این فصل پوشه متفاوتی برای پروژه‌های Visual Studio Code ایجاد کنید.
+
+#### خلاصه مراحل برای Visual Studio Code
+
+برای ایجاد یک Solution و پروژه‌ها با استفاده از Visual Studio Code، این مراحل را دنبال کنید:
+
+۱. یک پوشه برای Solution ایجاد کنید، مثلاً `Chapter01`.
+۲. یک فایل Solution در پوشه ایجاد کنید: `dotnet new sln`
+۳. یک پوشه و پروژه با استفاده از قالب ایجاد کنید: `dotnet new console -o HelloCS`
+۴. پوشه و پروژه آن را به Solution اضافه کنید: `dotnet sln add HelloCS`
+۵. مراحل ۳ و ۴ را برای ایجاد و افزودن هر پروژه دیگر تکرار کنید.
+۶. پوشه حاوی Solution را با استفاده از Visual Studio Code باز کنید: `code .`
+
