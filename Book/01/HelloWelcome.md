@@ -861,3 +861,251 @@ Unix 13.5.2
 ۵. مراحل ۳ و ۴ را برای ایجاد و افزودن هر پروژه دیگر تکرار کنید.
 ۶. پوشه حاوی Solution را با استفاده از Visual Studio Code باز کنید: `code .`
 
+### خلاصه‌ای از سایر انواع پروژه‌های استفاده شده در این کتاب
+
+پروژه **Console App** (برنامه کنسول) تنها یک نوع از قالب‌های پروژه است. در این کتاب، شما همچنین با استفاده از قالب‌های پروژه زیر، پروژه‌هایی را ایجاد خواهید کرد، همان‌طور که در جدول ۱.۵ نشان داده شده است:
+
+| **Visual Studio 2022** | **dotnet new** | **JetBrains Rider - Type** |
+| :--- | :--- | :--- |
+| Console App | `console` | Console Application |
+| Class Library | `classlib` | Class Library |
+| xUnit Test Project | `xunit` | Unit Test Project - xUnit |
+| ASP.NET Core Empty | `web` | ASP.NET Core Web Application - Empty |
+| Razor Class Library | `razorclasslib` | ASP.NET Core Web Application - Razor Class Library |
+| ASP.NET Core Web App (Model-View-Controller) | `mvc` | ASP.NET Core Web Application - Web App (Model-View-Controller) |
+| ASP.NET Core Web API | `webapi` | ASP.NET Core Web Application - Web API |
+| ASP.NET Core Web API (native AOT) | `webapiaot` | ASP.NET Core Web Application - Web API (native AOT) |
+| Blazor Web App | `blazor` | ASP.NET Core Web Application - Blazor Web App |
+
+*جدول ۱.۵: نام قالب‌های پروژه برای ویرایشگرهای کد مختلف*
+
+مراحل افزودن هر نوع پروژه جدید به یک Solution یکسان است. تنها نامِ نوعِ قالبِ پروژه متفاوت است و گاهی اوقات برخی سوئیچ‌های خط فرمان برای کنترل گزینه‌ها تغییر می‌کنند. اگر این سوئیچ‌ها و گزینه‌ها با مقادیر پیش‌فرض متفاوت باشند، من همیشه مشخص خواهم کرد که چه باشند.
+خلاصه‌ای از پیش‌فرض‌ها، گزینه‌ها و سوئیچ‌های قالب پروژه را می‌توانید در اینجا بیابید:
+[https://github.com/markjprice/cs12dotnet8/blob/main/docs/ch01-project-options.md](https://github.com/markjprice/cs12dotnet8/blob/main/docs/ch01-project-options.md)
+
+---
+
+### استفاده مفید از مخزن GitHub برای این کتاب
+
+گیت (Git) یک سیستم مدیریت کد منبع است که به طور گسترده استفاده می‌شود. گیت‌هاب (GitHub) شرکتی، وب‌سایتی و یک برنامه دسکتاپ است که مدیریت Git را آسان‌تر می‌کند. مایکروسافت در سال ۲۰۱۸ گیت‌هاب را خریداری کرد، بنابراین این پلتفرم به یکپارچگی نزدیک‌تر با ابزارهای مایکروسافت ادامه خواهد داد.
+
+من یک مخزن (Repository) گیت‌هاب برای این کتاب ایجاد کرده‌ام و از آن برای موارد زیر استفاده می‌کنم:
+
+* برای ذخیره کدهای Solution کتاب که پس از تاریخ انتشار چاپی قابل نگهداری و به‌روزرسانی باشند.
+* برای ارائه مطالب اضافی که کتاب را گسترش می‌دهند، مانند اصلاحیه‌ها (errata fixes)، بهبودهای کوچک، لیست لینک‌های مفید، و بخش‌های اختیاری درباره موضوعاتی که در کتاب چاپی جا نمی‌شدند.
+* برای فراهم کردن مکانی جهت تماس خوانندگان با من، در صورتی که مشکلاتی با کتاب داشته باشند.
+
+> **تمرین خوب:**
+> اکیداً توصیه می‌کنم که همه خوانندگان پیش از اقدام به انجام هرگونه وظیفه کدنویسی در این کتاب، صفحات مربوط به اصلاحیه‌ها (errata)، بهبودها، تغییرات پس از انتشار و خطاهای رایج را مرور کنند. شما می‌توانید آن‌ها را در لینک زیر بیابید:
+> [https://github.com/markjprice/cs12dotnet8/blob/main/docs/errata/errata.md](https://github.com/markjprice/cs12dotnet8/blob/main/docs/errata/errata.md)
+
+#### درک کد Solution در GitHub
+
+کد Solution موجود در مخزن گیت‌هاب برای این کتاب شامل پوشه‌هایی برای هر فصل است که می‌توانند با هر یک از ویرایشگرهای کد زیر باز شوند:
+
+* **Visual Studio 2022** یا **JetBrains Rider**: فایل Solution با پسوند `.sln` را باز کنید.
+* **Visual Studio Code**: پوشه‌ای که حاوی فایل Solution است را باز کنید.
+
+فصل‌های ۱ تا ۱۱ هرکدام فایل Solution مخصوص به خود را دارند که به نام `ChapterXX.sln` نام‌گذاری شده است (که در آن XX شماره فصل است). فصل‌های ۱۲ تا ۱۵ یک فایل Solution واحد به نام `PracticalApps.sln` را به اشتراک می‌گذارند.
+
+تمام کدهای Solution در لینک زیر قابل دسترسی هستند:
+[https://github.com/markjprice/cs12dotnet8/tree/main/code](https://github.com/markjprice/cs12dotnet8/tree/main/code)
+
+> **تمرین خوب:**
+> اگر نیاز دارید، به این فصل بازگردید تا نحوه ایجاد و مدیریت چندین پروژه در ویرایشگر کد انتخابی خود را یادآوری کنید. مخزن گیت‌هاب دستورالعمل‌های گام‌به‌گام برای سه ویرایشگر کد (Visual Studio 2022، Visual Studio Code و JetBrains Rider) را به همراه تصاویر اضافی ارائه می‌دهد:
+> [https://github.com/markjprice/cs12dotnet8/tree/main/docs/code-editors/](https://github.com/markjprice/cs12dotnet8/tree/main/docs/code-editors/)
+
+#### طرح مسائل (Raising issues) مربوط به کتاب
+
+اگر در دنبال کردن هر یک از دستورالعمل‌های این کتاب گیر کردید، یا اگر اشتباهی در متن یا کدِ Solutionها پیدا کردید، لطفاً یک Issue در مخزن گیت‌هاب ثبت کنید:
+
+۱. از مرورگر مورد علاقه خود برای رفتن به لینک زیر استفاده کنید:
+[https://github.com/markjprice/cs12dotnet8/issues](https://github.com/markjprice/cs12dotnet8/issues)
+
+۲. روی **New Issue** کلیک کنید.
+
+۳. تا حد امکان جزئیاتی را وارد کنید که به من در تشخیص مسئله کمک کند. برای مثال:
+
+* عنوان بخش خاص، شماره صفحه و شماره مرحله.
+* ویرایشگر کد شما، مثلاً Visual Studio 2022، Visual Studio Code یا چیز دیگر، شامل شماره نسخه.
+* هر مقدار از کد و پیکربندی شما که فکر می‌کنید مرتبط و ضروری است.
+* توصیفی از رفتار مورد انتظار و رفتاری که تجربه کرده‌اید.
+* تصاویر (می‌توانید فایل‌های تصویری را به داخل کادر Issue بکشید و رها کنید).
+
+موارد زیر اهمیت کمتری دارند اما ممکن است مفید باشند:
+
+* سیستم‌عامل شما، مثلاً Windows 11 64-bit یا macOS Ventura نسخه ۱۳.۵.۲.
+* سخت‌افزار شما، مثلاً Intel، Apple Silicon یا پردازنده ARM.
+
+من همیشه نمی‌توانم بلافاصله به Issueها پاسخ دهم. اما می‌خواهم همه خوانندگانم با کتاب من موفق باشند، بنابراین اگر بتوانم بدون دردسرِ زیاد به شما (و دیگران) کمک کنم، با کمال میل این کار را انجام خواهم داد.
+
+#### ارائه بازخورد به من
+
+اگر مایلید بازخورد کلی‌تری درباره کتاب به من بدهید، یا به آدرس `markjprice@gmail.com` ایمیل بزنید یا سوال خود را در کانال دیسکورد (Discord) کتاب بپرسید. شما می‌توانید بازخورد را به‌صورت ناشناس ارائه دهید، یا اگر مایل به دریافت پاسخ از طرف من هستید، می‌توانید یک آدرس ایمیل ارائه دهید. من از این آدرس ایمیل فقط برای پاسخ به بازخورد شما استفاده خواهم کرد.
+
+لطفاً با استفاده از دعوت‌نامه زیر، در دیسکورد به من و هم‌خوانندگان خود بپیوندید:
+[https://packt.link/csharp12dotnet8](https://packt.link/csharp12dotnet8)
+
+توصیه می‌کنم لینک فوق را به بوک‌مارک‌های مورد علاقه خود اضافه کنید. من مشتاقم از خوانندگانم درباره آنچه در کتاب دوست دارند، و همچنین پیشنهادات برای بهبود و نحوه کارشان با C# و .NET بشنوم، پس تعارف نکنید. لطفاً در تماس باشید!
+پیشاپیش بابت بازخوردهای متفکرانه و سازنده شما سپاسگزارم.
+
+#### اجتناب از اشتباهات رایج
+
+پس از کار با وظایف گام‌به‌گام در این کتاب، خوانندگان اغلب به‌طور مستقل عمل می‌کنند و سعی می‌کنند کدهای مشابهی بنویسند، اما گاهی به مشکلاتی برمی‌خورند و یا یک Issue در مخزن گیت‌هاب ثبت می‌کنند یا سوالی در کانال دیسکورد کتاب ارسال می‌کنند. از این طریق، من متوجه برخی اشتباهات رایج شده‌ام، بنابراین صفحه‌ای را در مخزن نگهداری می‌کنم تا این دام‌های احتمالی و نحوه رفع آن‌ها را برجسته و توضیح دهم:
+[https://github.com/markjprice/cs12dotnet8/blob/main/docs/errata/common-mistakes.md](https://github.com/markjprice/cs12dotnet8/blob/main/docs/errata/common-mistakes.md)
+
+---
+
+### دانلود کد Solution از مخزن GitHub
+
+اگر فقط می‌خواهید تمام فایل‌های Solution را بدون استفاده از Git دانلود کنید، روی دکمه سبز رنگ **Code** کلیک کرده و سپس **Download ZIP** را انتخاب کنید، همان‌طور که در شکل ۱.۱۴ نشان داده شده است:
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/01/15.png)
+</div>
+
+> **تمرین خوب:**
+> بهتر است کدهای Solution را در یک مسیر پوشه کوتاه، مانند `C:\cs12dotnet8\` یا `C:\book\` کلون یا دانلود کنید تا از تجاوز فایل‌های تولید شده توسط بیلد (build-generated files) از حداکثر طول مسیر جلوگیری شود. همچنین باید از کاراکترهای خاص مانند `#` اجتناب کنید. برای مثال، از نام پوشه‌ای مانند `C:\C# projects\` استفاده نکنید. این نام پوشه ممکن است برای یک پروژه برنامه کنسول ساده کار کند، اما به محض اینکه شروع به افزودن ویژگی‌هایی کنید که به طور خودکار کد تولید می‌کنند، احتمالاً با مشکلات عجیبی روبرو خواهید شد. نام پوشه‌های خود را کوتاه و ساده نگه دارید.
+
+---
+
+### استفاده از Git با Visual Studio Code و خط فرمان
+
+Visual Studio Code دارای یکپارچگی (integration) با Git است، اما از نصبِ Gitِ سیستم‌عامل شما استفاده می‌کند، بنابراین پیش از اینکه بتوانید از این ویژگی‌ها استفاده کنید، باید ابتدا Git نسخه 2.0 یا بالاتر را نصب کنید. می‌توانید Git را از لینک زیر نصب کنید:
+[https://git-scm.com/download](https://git-scm.com/download)
+
+اگر دوست دارید از یک رابط کاربری گرافیکی (GUI) استفاده کنید، می‌توانید GitHub Desktop را از لینک زیر دانلود کنید:
+[https://desktop.github.com](https://desktop.github.com)
+
+#### کلون کردن مخزن کدِ Solutionِ کتاب
+
+بیایید مخزن کدِ Solutionِ کتاب را کلون (Clone) کنیم. در مراحل زیر، شما از ترمینال Visual Studio Code استفاده خواهید کرد، اما می‌توانید دستورات را در هر خط فرمان یا پنجره ترمینالی وارد کنید:
+
+۱. یک پوشه به نام `Repos-vscode` در پوشه کاربری (User) یا پوشه Documents خود، یا هر جایی که می‌خواهید مخازن Git خود را ذخیره کنید، ایجاد کنید.
+
+۲. پوشه `Repos-vscode` را در خط فرمان یا ترمینال باز کنید و سپس دستور زیر را وارد نمایید:
+
+```bash
+git clone https://github.com/markjprice/cs12dotnet8.git
+```
+
+> توجه داشته باشید که کلون کردن تمام Solutionهای همه فصل‌ها حدود یک دقیقه یا بیشتر طول می‌کشد، پس لطفاً صبور باشید.
+
+---
+
+### جستجو برای راهنمایی (Help)
+
+این بخش تماماً درباره نحوه یافتن اطلاعات باکیفیت درباره برنامه‌نویسی در وب است.
+
+#### خواندن مستندات در Microsoft Learn
+
+منبع قطعی برای دریافت راهنمایی درباره ابزارها و پلتفرم‌های توسعه‌دهندگان مایکروسافت، در مستندات فنی موجود در **Microsoft Learn** قرار دارد و می‌توانید آن را در لینک زیر بیابید:
+[https://learn.microsoft.com/en-us/docs](https://learn.microsoft.com/en-us/docs)
+
+#### لینک‌های مستندات در این کتاب
+
+مستندات رسمی مایکروسافت برای .NET باید تمام نسخه‌ها را پوشش دهد. نسخه پیش‌فرضی که در مستندات نمایش داده می‌شود، همیشه جدیدترین نسخه GA (عرضه عمومی) است. برای مثال، بین نوامبر ۲۰۲۳ تا نوامبر ۲۰۲۴، نسخه پیش‌فرض .NET که در صفحات مستندات نمایش داده می‌شود ۸.۰ خواهد بود. بین نوامبر ۲۰۲۴ تا نوامبر ۲۰۲۵، نسخه پیش‌فرض .NET نسخه ۹.۰ خواهد بود.
+
+لینک زیر بسته به تاریخ فعلی، به‌طور خودکار به نسخه جاری هدایت می‌شود:
+[https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.codeanalysis.stringsyntaxattribute](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.codeanalysis.stringsyntaxattribute)
+
+برای مشاهده صفحه مستندات به‌طور خاص برای .NET 7، عبارت `?view=net-7.0` را به انتهای لینک اضافه کنید. برای مثال، از لینک زیر استفاده کنید:
+[https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.codeanalysis.stringsyntaxattribute?view=net-7.0](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.codeanalysis.stringsyntaxattribute?view=net-7.0)
+
+تمام لینک‌های مستندات در این کتاب نسخه خاصی را مشخص نمی‌کنند، بنابراین پس از نوامبر ۲۰۲۴، صفحات مستندات مربوط به .NET 9.0 را نمایش خواهند داد. اگر می‌خواهید مستندات را مجبور کنید تا نسخه مربوط به .NET 8.0 را نمایش دهد، عبارت `?view=net-8.0` را به انتهای لینک اضافه کنید.
+
+شما می‌توانید بررسی کنید که یک ویژگی .NET از چه نسخه‌هایی پشتیبانی می‌کند، این کار با افزودن `#applies-to` به انتهای لینک انجام می‌شود، برای مثال:
+[https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.codeanalysis.stringsyntaxattribute#applies-to](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.codeanalysis.stringsyntaxattribute#applies-to)
+
+بنابراین می‌توانیم ببینیم که ویژگی (Attribute) `StringSyntax` تنها در .NET 7 یا بالاتر در دسترس است.
+
+#### دریافت راهنمایی برای ابزار dotnet
+
+در خط فرمان، می‌توانید از ابزار `dotnet` درباره دستوراتش راهنمایی بخواهید. سینتکس آن به این صورت است:
+`dotnet help <command>`
+
+این کار باعث می‌شود مرورگر وب شما صفحه‌ای را در مستندات درباره دستور مشخص شده باز کند. دستورات رایج dotnet شامل `new`، `build`، `run` و بسیاری دیگر هستند.
+
+> **هشدار!**
+> دستور `dotnet help new` با .NET Core 3.1 تا .NET 6 کار می‌کرد، اما در .NET 7 یا بالاتر خطا برمی‌گرداند:
+> `Specified command 'new' is not a valid SDK command. Specify a valid SDK command. For more information, run dotnet help.`
+> امیدواریم که آن‌ها به‌زودی این باگ را رفع کنند!
+
+نوع دیگری از راهنمایی، مستندات خط فرمان است. این روش از سینتکس زیر پیروی می‌کند:
+`dotnet <command> -?|-h|--help`
+
+برای مثال، `dotnet new -?` یا `dotnet new -h` یا `dotnet new --help` مستنداتی درباره دستور `new` را در خط فرمان چاپ می‌کند.
+
+همان‌طور که اکنون انتظار دارید، `dotnet help help` یک مرورگر وب را برای دستور help باز می‌کند، و `dotnet help -h` مستندات مربوط به دستور help را در خط فرمان چاپ می‌کند!
+
+بیایید چند مثال را امتحان کنیم:
+
+۱. برای باز کردن مستندات رسمی در پنجره مرورگر وب برای دستور `dotnet build`، دستور زیر را در خط فرمان یا ترمینال Visual Studio Code وارد کنید و به صفحه‌ای که در مرورگر باز می‌شود توجه کنید، همان‌طور که در شکل ۱.۱۵ نشان داده شده است:
+
+```bash
+dotnet help build
+```
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/01/16.png)
+</div>
+
+۲. برای دریافت خروجی راهنمایی در خط فرمان، از پرچم `-?` یا `-h` یا `--help` استفاده کنید، همان‌طور که در دستور زیر نشان داده شده است:
+
+```bash
+dotnet build -?
+```
+
+۳. شما خروجی جزئی زیر را مشاهده خواهید کرد:
+
+```text
+Description: .NET Builder
+Usage: dotnet build [ <PROJECT | SOLUTION>...] [options]
+
+Arguments:
+  <PROJECT | SOLUTION>  The project or solution file to operate on. If a 
+file is not specified, the command will search the current directory for 
+one.
+
+Options:
+  --ucr, --use-current-runtime         Use current runtime as the target 
+runtime.
+  -f, --framework <FRAMEWORK>          The target framework to build for. 
+The target framework must also be specified in the project file.
+...
+  -?, -h, --help                       Show command line help.
+```
+
+۴. هر دو نوع درخواست راهنمایی را برای دستورات زیر تکرار کنید: `add`، `help`، `list`، `new` و `run`، با یادآوری اینکه `new` ممکن است به دلیل باگی که در .NET 7 ایجاد شده، صفحه وب خود را نشان ندهد.
+
+---
+
+### دریافت تعاریف (Definitions) انواع و اعضای آن‌ها
+
+یکی از مفیدترین ویژگی‌های یک ویرایشگر کد، **Go To Definition** (کلید F12) است. این ویژگی در Visual Studio Code، Visual Studio 2022 و JetBrains Rider در دسترس است. این ویژگی با خواندن متادیتا (metadata) در اسمبلیِ کامپایل شده، نشان می‌دهد که تعریف عمومی (public definition) آن نوع (type) یا عضو (member) چگونه است. برخی ابزارها، مانند **ILSpy .NET Decompiler**، حتی از روی متادیتا و کد IL مهندسی معکوس انجام می‌دهند تا کد را به C# یا زبان دیگری برای شما بازگردانند.
+
+یک ویژگی مشابه و مرتبط، **Go To Implementation** (کلید Ctrl + F12) نام دارد. به جای خواندن متادیتا یا دی‌کامپایل کردن، اگر کد منبع با استفاده از ویژگی اختیاریِ "لینک منبع" (source link) تعبیه شده باشد، این گزینه کد منبع واقعی را نشان می‌دهد.
+
+> **هشدار!**
+> ویژگی **Go To Definition** باید به متادیتای دی‌کامپایل شده برای یک عضو یا نوع برود. اما اگر قبلاً "لینک منبع" (source link) را مشاهده کرده باشید، آنگاه به لینک منبع می‌رود.
+> ویژگی **Go To Implementation** باید به پیاده‌سازی لینک منبع برای یک عضو یا نوع برود. اما اگر لینک منبع را غیرفعال کرده باشید، آنگاه به متادیتای دی‌کامپایل شده می‌رود.
+
+بیایید ببینیم چگونه از ویژگی **Go To Definition** استفاده کنیم:
+
+۱. در ویرایشگر کد مورد علاقه خود، Solution/پوشه با نام `Chapter01` را باز کنید.
+اگر از **Visual Studio 2022** استفاده می‌کنید:
+
+* به مسیر **Tools | Options** بروید.
+* در کادر جستجو، عبارت `navigation to source` را وارد کنید.
+* گزینه **Text Editor | C# | Advanced** را انتخاب کنید.
+* تیک گزینه **Enable navigation to Source Link and Embedded sources** را بردارید و سپس روی **OK** کلیک کنید، همان‌طور که در شکل ۱.۱۶ نشان داده شده است:
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/01/17.png)
+</div>
+
+تعاریف می‌توانند از روی متادیتا مهندسی معکوس شوند یا اگر فعال باشد، از کد منبع اصلی بارگذاری شوند. شخصاً، من کد حاصل از متادیتا را مفیدتر می‌دانم، همان‌طور که در شرف دیدن آن هستید. در پایان این بخش، سعی کنید گزینه **Source Link** را دوباره روشن کنید تا تفاوت را ببینید.
+
