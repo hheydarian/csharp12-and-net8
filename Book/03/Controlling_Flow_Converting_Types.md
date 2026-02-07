@@ -381,8 +381,6 @@ y >> 1     |       3 | 00000011
 > **تمرین خوب:**
 > به یاد داشته باشید که هنگام عملیات روی مقادیر صحیح، نمادهای `&` و `|` عملگرهای بیتی هستند، و هنگام عملیات روی مقادیر بولی مانند `true` و `false`، نمادهای `&` و `|` عملگرهای منطقی هستند.
 
-ترجمه بخش‌های بعدی فصل سوم با همان سبک رسمی و آموزشی کتاب:
-
 ---
 
 #### عملگرهای متفرقه (Miscellaneous operators)
@@ -903,3 +901,360 @@ string[] names2 = { "Kate", "Jack", "Rebecca", "Tom" };
 ```
 
 ۲. حلقه `for` را تغییر دهید تا از `names2` استفاده کند، برنامه کنسول را اجرا کنید، و توجه کنید که نتایج یکسان هستند.
+
+---
+
+#### کار با آرایه‌های چندبعدی
+
+به جای یک آرایه تک‌بعدی برای ذخیره یک ردیف از مقادیر رشته‌ای (یا هر نوع داده دیگری)، اگر بخواهیم یک شبکه (grid) از مقادیر را ذخیره کنیم چه؟ یا یک مکعب؟ یا حتی ابعاد بالاتر؟
+
+ما می‌توانیم یک آرایه دوبعدی، یا همان شبکه، از مقادیر رشته‌ای را به صورت جدول ۳.۲ تصور کنیم:
+
+| 0 | 1 | 2 | 3 |
+|---|---|---|---|
+| **0** | Alpha | Beta | Gamma | Delta |
+| **1** | Anne | Ben | Charlie | Doug |
+| **2** | Aardvark | Bear | Cat | Dog |
+
+*جدول ۳.۲: تجسم یک آرایه دوبعدی*
+
+بیایید نگاهی به نحوه استفاده از آرایه‌های چندبعدی بیندازیم:
+
+۱. در انتهای `Program.cs`، دستوراتی اضافه کنید تا یک آرایه دوبعدی از مقادیر رشته‌ای را تعریف و نمونه‌سازی کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+string[,] grid1 = // Two dimensional array.
+{
+    { "Alpha", "Beta", "Gamma", "Delta" },
+    { "Anne", "Ben", "Charlie", "Doug" },
+    { "Aardvark", "Bear", "Cat", "Dog" }
+};
+```
+
+۲. ما می‌توانیم کران‌های پایین و بالا این آرایه را با استفاده از متدهای کمکی کشف کنیم، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+WriteLine($"1st dimension, lower bound: {grid1.GetLowerBound(0)}");
+WriteLine($"1st dimension, upper bound: {grid1.GetUpperBound(0)}");
+WriteLine($"2nd dimension, lower bound: {grid1.GetLowerBound(1)}");
+WriteLine($"2nd dimension, upper bound: {grid1.GetUpperBound(1)}");
+```
+
+۳. کد را اجرا کنید و به نتیجه توجه کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+1st dimension, lower bound: 0
+1st dimension, upper bound: 2
+2nd dimension, lower bound: 0
+2nd dimension, upper bound: 3
+```
+
+۴. سپس می‌توانیم از این مقادیر در دستورات `for` تودرتو برای حلقه زدن روی مقادیر رشته‌ای استفاده کنیم، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+for (int row = 0; row <= grid1.GetUpperBound(0); row++)
+{
+    for (int col = 0; col <= grid1.GetUpperBound(1); col++)
+    {
+        WriteLine($"Row {row}, Column {col}: {grid1[row, col]}");
+    }
+}
+```
+
+۵. کد را اجرا کنید و به نتیجه توجه کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+Row 0, Column 0: Alpha
+Row 0, Column 1: Beta
+Row 0, Column 2: Gamma
+Row 0, Column 3: Delta
+Row 1, Column 0: Anne
+Row 1, Column 1: Ben
+Row 1, Column 2: Charlie
+Row 1, Column 3: Doug
+Row 2, Column 0: Aardvark
+Row 2, Column 1: Bear
+Row 2, Column 2: Cat
+Row 2, Column 3: Dog
+```
+
+شما باید هنگام نمونه‌سازی، برای هر ردیف و هر ستون مقداری ارائه دهید، وگرنه خطاهای کامپایل دریافت خواهید کرد. اگر نیاز به نشان دادن یک مقدار رشته‌ای مفقود دارید، از `string.Empty` استفاده کنید. یا اگر آرایه را طوری تعریف کنید که مقادیر رشته‌ای نال‌پذیر داشته باشد (`string?[]`)، آنگاه می‌توانید برای مقدار مفقود از `null` استفاده کنید.
+
+اگر نمی‌توانید از سینتکس مقداردهی اولیه آرایه استفاده کنید، شاید به این دلیل که مقادیر را از یک فایل یا پایگاه داده بارگذاری می‌کنید، می‌توانید اعلان ابعاد آرایه و تخصیص حافظه را از انتساب مقادیر جدا کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+// Alternative syntax for declaring and allocating memory
+// for a multi-dimensional array.
+string[,] grid2 = new string[3,4]; // Allocate memory.
+grid2[0, 0] = "Alpha"; // Assign values.
+grid2[0, 1] = "Beta"; // And so on.
+grid2[2, 3] = "Dog";
+```
+
+هنگام اعلان اندازه ابعاد، شما **طول** (length) را مشخص می‌کنید، نه کران بالا را. عبارت `new string[3,4]` به این معنی است که آرایه می‌تواند ۳ آیتم در بعد اول خود (۰) با کران بالای ۲، و ۴ آیتم در بعد دوم خود (۱) با کران بالای ۳ داشته باشد.
+
+#### کار با آرایه‌های دندانه‌دار (Jagged Arrays)
+
+اگر به یک آرایه چندبعدی نیاز دارید اما تعداد آیتم‌های ذخیره شده در هر بعد متفاوت است، می‌توانید یک **آرایه از آرایه‌ها**، یا همان **آرایه دندانه‌دار** (jagged array) تعریف کنید. ما می‌توانیم یک آرایه دندانه‌دار را همان‌طور که در شکل ۳.۳ نشان داده شده است تصور کنیم:
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/03/3.png)
+</div>
+
+بیایید نگاهی به نحوه استفاده از آرایه دندانه‌دار بیندازیم:
+
+۱. در انتهای `Program.cs`، دستوراتی اضافه کنید تا آرایه‌ای از آرایه‌های رشته‌ای را تعریف و نمونه‌سازی کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+string[][] jagged = // An array of string arrays.
+{
+    new[] { "Alpha", "Beta", "Gamma" },
+    new[] { "Anne", "Ben", "Charlie", "Doug" },
+    new[] { "Aardvark", "Bear" }
+};
+```
+
+۲. ما می‌توانیم کران‌های پایین و بالا آرایه از آرایه‌ها، و سپس هر آرایه درون آن را کشف کنیم، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+WriteLine("Upper bound of the array of arrays is: {0}",
+    jagged.GetUpperBound(0));
+
+for (int array = 0; array <= jagged.GetUpperBound(0); array++)
+{
+    WriteLine("Upper bound of array {0} is: {1}",
+        arg0: array, arg1: jagged[array].GetUpperBound(0));
+}
+```
+
+۳. کد را اجرا کنید و به نتیجه توجه کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+Upper bound of the array of arrays is: 2
+Upper bound of array 0 is: 2
+Upper bound of array 1 is: 3
+Upper bound of array 2 is: 1
+```
+
+۴. سپس می‌توانیم از این مقادیر در دستورات `for` تودرتو برای حلقه زدن روی مقادیر رشته‌ای استفاده کنیم، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+for (int row = 0; row <= jagged.GetUpperBound(0); row++)
+{
+    for (int col = 0; col <= jagged[row].GetUpperBound(0); col++)
+    {
+        WriteLine($"Row {row}, Column {col}: {jagged[row][col]}");
+    }
+}
+```
+
+۵. کد را اجرا کنید و به نتیجه توجه کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+Row 0, Column 0: Alpha
+Row 0, Column 1: Beta
+Row 0, Column 2: Gamma
+Row 1, Column 0: Anne
+Row 1, Column 1: Ben
+Row 1, Column 2: Charlie
+Row 1, Column 3: Doug
+Row 2, Column 0: Aardvark
+Row 2, Column 1: Bear
+```
+
+#### تطبیق الگوی لیست (List Pattern Matching) با آرایه‌ها
+
+پیش‌تر در این فصل، دیدید که چگونه یک شیء منفرد از تطبیق الگو علیه نوع و ویژگی‌هایش پشتیبانی می‌کند. تطبیق الگو همچنین با آرایه‌ها و مجموعه‌ها کار می‌کند.
+
+تطبیق الگوی لیست که با C# 11 معرفی شد، با هر نوعی که دارای ویژگی عمومی `Length` یا `Count` باشد و دارای یک ایندکسر (indexer) با پارامتر `int` یا `System.Index` باشد، کار می‌کند. شما در فصل ۵، *ساخت انواع اختصاصی خود با برنامه‌نویسی شیءگرا*، درباره ایندکسرها یاد خواهید گرفت.
+
+هنگامی که چندین الگوی لیست را در یک عبارت `switch` تعریف می‌کنید، باید آن‌ها را طوری مرتب کنید که الگوی خاص‌تر اول بیاید، وگرنه کامپایلر شکایت خواهد کرد زیرا یک الگوی کلی‌تر با تمام الگوهای خاص‌تر نیز مطابقت خواهد داشت و الگوی خاص‌تر را غیرقابل دسترسی می‌کند.
+
+جدول ۳.۳ مثال‌هایی از تطبیق الگوی لیست را با فرض لیستی از مقادیر `int` نشان می‌دهد:
+
+| Example | Description |
+| :--- | :--- |
+| `[]` | با یک آرایه یا مجموعه خالی مطابقت دارد. |
+| `[..]` | با یک آرایه یا مجموعه با هر تعداد آیتم، از جمله صفر، مطابقت دارد، بنابراین اگر نیاز دارید روی هر دو `switch` کنید، `[..]` باید بعد از `[]` بیاید. |
+| `[_]` | با لیستی با هر آیتم تکی مطابقت دارد. |
+| `[int item1]` یا `[var item1]` | با لیستی با هر آیتم تکی مطابقت دارد و می‌تواند از مقدار در عبارت بازگشتی با ارجاع به `item1` استفاده کند. |
+| `[7, 2]` | دقیقاً با لیستی از دو آیتم با آن مقادیر به همان ترتیب مطابقت دارد. |
+| `[_, _]` | با لیستی با هر دو آیتم مطابقت دارد. |
+| `[var item1, var item2]` | با لیستی با هر دو آیتم مطابقت دارد و می‌تواند از مقادیر در عبارت بازگشتی با ارجاع به `item1` و `item2` استفاده کند. |
+| `[_, _, _]` | با لیستی با هر سه آیتم مطابقت دارد. |
+| `[var item1, ..]` | با لیستی با یک یا چند آیتم مطابقت دارد. می‌تواند به مقدار اولین آیتم در عبارت بازگشتی با ارجاع به `item1` اشاره کند. |
+| `[var firstItem, .., var lastItem]` | با لیستی با دو یا چند آیتم مطابقت دارد. می‌تواند به مقدار اولین و آخرین آیتم در عبارت بازگشتی با ارجاع به `firstItem` و `lastItem` اشاره کند. |
+| `[.., var lastItem]` | با لیستی با یک یا چند آیتم مطابقت دارد. می‌تواند به مقدار آخرین آیتم در عبارت بازگشتی با ارجاع به `lastItem` اشاره کند. |
+
+*جدول ۳.۳: مثال‌هایی از تطبیق الگوی لیست*
+
+بیایید چند مثال را در کد ببینیم:
+
+۱. در انتهای `Program.cs`، دستوراتی اضافه کنید تا چند آرایه از مقادیر `int` تعریف کنید، و سپس آن‌ها را به متدی ارسال کنید که بسته به الگویی که بهترین تطابق را دارد، متن توصیفی برمی‌گرداند، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+int[] sequentialNumbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+int[] oneTwoNumbers = { 1, 2 };
+int[] oneTwoTenNumbers = { 1, 2, 10 };
+int[] oneTwoThreeTenNumbers = { 1, 2, 3, 10 };
+int[] primeNumbers = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 };
+int[] fibonacciNumbers = { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 };
+int[] emptyNumbers = { }; // Or use Array.Empty()
+int[] threeNumbers = { 9, 7, 5 };
+int[] sixNumbers = { 9, 7, 5, 4, 2, 10 };
+
+WriteLine($"{nameof(sequentialNumbers)}: {CheckSwitch(sequentialNumbers)}");
+WriteLine($"{nameof(oneTwoNumbers)}: {CheckSwitch(oneTwoNumbers)}");
+WriteLine($"{nameof(oneTwoTenNumbers)}: {CheckSwitch(oneTwoTenNumbers)}");
+WriteLine($"{nameof(oneTwoThreeTenNumbers)}: {CheckSwitch(oneTwoThreeTenNumbers)}");
+WriteLine($"{nameof(primeNumbers)}: {CheckSwitch(primeNumbers)}");
+WriteLine($"{nameof(fibonacciNumbers)}: {CheckSwitch(fibonacciNumbers)}");
+WriteLine($"{nameof(emptyNumbers)}: {CheckSwitch(emptyNumbers)}");
+WriteLine($"{nameof(threeNumbers)}: {CheckSwitch(threeNumbers)}");
+WriteLine($"{nameof(sixNumbers)}: {CheckSwitch(sixNumbers)}");
+
+static string CheckSwitch(int[] values) => values switch
+{
+    [] => "Empty array",
+    [1, 2, _, 10] => "Contains 1, 2, any single number, 10.",
+    [1, 2, .., 10] => "Contains 1, 2, any range including empty, 10.",
+    [1, 2] => "Contains 1 then 2.",
+    [int item1, int item2, int item3] => $"Contains {item1} then {item2} then {item3}.",
+    [0, _] => "Starts with 0, then one other number.",
+    [0, ..] => "Starts with 0, then any range of numbers.",
+    [2, .. int[] others] => $"Starts with 2, then {others.Length} more numbers.",
+    [..] => "Any items in any order.",
+};
+```
+
+۲. کد را اجرا کنید و به نتیجه توجه کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+sequentialNumbers: Contains 1, 2, any range including empty, 10.
+oneTwoNumbers: Contains 1 then 2.
+oneTwoTenNumbers: Contains 1, 2, any range including empty, 10.
+oneTwoThreeTenNumbers: Contains 1, 2, any single number, 10.
+primeNumbers: Starts with 2, then 9 more numbers.
+fibonacciNumbers: Starts with 0, then any range of numbers.
+emptyNumbers: Empty array
+threeNumbers: Contains 9 then 7 then 5.
+sixNumbers: Any items in any order.
+```
+
+> می‌توانید درباره تطبیق الگوی لیست در لینک زیر بیشتر بدانید:
+> [https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/patterns#list-patterns](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/patterns#list-patterns)
+
+#### درک آرایه‌های درون‌خطی (Inline Arrays)
+
+آرایه‌های درون‌خطی با C# 12 معرفی شدند و ویژگی پیشرفته‌ای هستند که توسط تیم زمان‌اجرای .NET برای بهبود عملکرد استفاده می‌شوند. بعید است خودتان از آن‌ها استفاده کنید مگر اینکه نویسنده کتابخانه عمومی باشید، اما به‌طور خودکار از استفاده دیگران از آن‌ها بهره‌مند خواهید شد.
+
+> **اطلاعات بیشتر:** می‌توانید درباره آرایه‌های درون‌خطی در لینک زیر بیشتر بدانید:
+> [https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-12.0/inline-arrays](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-12.0/inline-arrays)
+
+#### خلاصه آرایه‌ها
+
+ما از سینتکس کمی متفاوت برای تعریف انواع مختلف آرایه‌ها استفاده می‌کنیم، همان‌طور که در جدول ۳.۴ نشان داده شده است:
+
+| Type of array | Declaration syntax |
+| :--- | :--- |
+| One dimension | `datatype[]`, for example, `string[]` |
+| Two dimensions | `string[,]` |
+| Three dimensions | `string[,,]` |
+| Ten dimensions | `string[,,,,,,,,,]` |
+| Array of arrays aka two-dimensional jagged array | `string[][]` |
+| Array of arrays of arrays aka three-dimensional jagged array | `string[][][]` |
+
+*جدول ۳.۴: خلاصه سینتکس تعریف آرایه*
+
+آرایه‌ها برای ذخیره موقت چندین آیتم مفید هستند، اما مجموعه‌ها (collections) گزینه انعطاف‌پذیرتری هنگام افزودن و حذف پویا آیتم‌ها هستند. فعلاً نگران مجموعه‌ها نباشید، زیرا ما آن‌ها را در فصل ۸، *کار با انواع رایج .NET* پوشش خواهیم داد. شما می‌توانید هر دنباله‌ای از آیتم‌ها را با استفاده از متد الحاقی `ToArray` به یک آرایه تبدیل کنید، که ما آن را در فصل ۱۱، *پرس‌وجو و دستکاری داده‌ها با استفاده از LINQ* پوشش خواهیم داد.
+
+> **تمرین خوب:**
+> اگر نیازی به افزودن و حذف پویای آیتم‌ها ندارید، باید به جای مجموعه‌ای مانند `List` از آرایه استفاده کنید.
+
+### تبدیل (Casting) و تبدیل انواع (Converting)
+
+شما اغلب نیاز خواهید داشت مقادیر متغیرها را بین انواع مختلف تبدیل کنید. برای مثال، ورودی داده اغلب به صورت متن در کنسول وارد می‌شود، بنابراین در ابتدا در متغیری از نوع `string` ذخیره می‌شود، اما سپس بسته به اینکه چگونه باید ذخیره و پردازش شود، باید به تاریخ/زمان، عدد یا نوع داده دیگری تبدیل شود. گاهی اوقات لازم است بین انواع عددی تبدیل کنید، مانند بین یک عدد صحیح و یک ممیز شناور، قبل از انجام محاسبات.
+
+تبدیل به نام **Casting** نیز شناخته می‌شود و دو نوع دارد: ضمنی (implicit) و صریح (explicit).
+تبدیل ضمنی به‌صورت خودکار اتفاق می‌افتد و ایمن است، به این معنی که هیچ اطلاعاتی را از دست نخواهید داد.
+تبدیل صریح باید به‌صورت دستی انجام شود زیرا ممکن است اطلاعاتی را از دست بدهد، برای مثال، دقت یک عدد. با تبدیل صریح، شما به کامپایلر C# می‌گویید که خطر را درک کرده و می‌پذیرید.
+
+#### تبدیل اعداد به‌صورت ضمنی و صریح
+
+تبدیل ضمنی یک متغیر `int` به یک متغیر `double` ایمن است زیرا هیچ اطلاعاتی از دست نخواهد رفت، همان‌طور که در زیر نشان داده شده است:
+
+۱. از ابزار کدنویسی مورد نظر خود استفاده کنید تا یک پروژه جدید Console App / console به نام `CastingConverting` به Solution `Chapter03` اضافه کنید.
+
+۲. در `Program.cs`، دستورات موجود را حذف کنید، سپس دستوراتی تایپ کنید تا یک متغیر `int` و یک متغیر `double` تعریف و اختصاص دهید، و سپس مقدار عدد صحیح را هنگام انتساب به متغیر `double` به‌صورت ضمنی تبدیل کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+int a = 10;
+double b = a; // An int can be safely cast into a double.
+WriteLine($"a is {a}, b is {b}");
+```
+
+۳. دستوراتی تایپ کنید تا یک متغیر `double` و یک متغیر `int` تعریف و اختصاص دهید، و سپس سعی کنید مقدار `double` را هنگام انتساب به متغیر `int` به‌صورت ضمنی تبدیل کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+double c = 9.8;
+int d = c; // Compiler gives an error if you do not explicitly cast.
+WriteLine($"c is {c}, d is {d}");
+```
+
+۴. کد را اجرا کنید و به پیام خطا توجه کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+`Error: (6,9): error CS0266: Cannot implicitly convert type 'double' to 'int'. An explicit conversion exists (are you missing a cast?)`
+
+شما نمی‌توانید به‌صورت ضمنی یک متغیر `double` را به یک متغیر `int` تبدیل کنید زیرا به‌طور بالقوه ناامن است و می‌تواند داده‌ها را از دست بدهد، مانند مقدار بعد از ممیز اعشاری.
+
+شما باید یک متغیر `double` را با استفاده از یک جفت پرانتز گرد در اطراف نوعی که می‌خواهید `double` را به آن تبدیل کنید، به‌صورت صریح به یک متغیر `int` تبدیل کنید. جفت پرانتز گرد **عملگر تبدیل (cast operator)** است. حتی در آن صورت، باید آگاه باشید که بخش بعد از ممیز اعشاری بدون هشدار بریده خواهد شد زیرا شما انتخاب کرده‌اید که یک تبدیل صریح انجام دهید و بنابراین عواقب آن را درک می‌کنید.
+
+۵. دستور انتساب برای متغیر `d` را تغییر دهید تا متغیر `c` را به‌صورت صریح به یک `int` تبدیل کنید، و توضیحی اضافه کنید تا توضیح دهید چه اتفاقی خواهد افتاد، همان‌طور که در کد زیر برجسته شده است:
+
+```csharp
+double c = 9.8;
+int d = (int)c; // Compiler gives an error if you do not explicitly cast.
+WriteLine($"c is {c}, d is {d}"); // d loses the .8 part.
+```
+
+۶. کد را اجرا کنید تا نتایج را مشاهده کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+a is 10, b is 10
+c is 9.8, d is 9
+```
+
+ما باید عملیات مشابهی را هنگام تبدیل مقادیر بین اعداد صحیح بزرگتر و اعداد صحیح کوچکتر انجام دهیم. دوباره، آگاه باشید که ممکن است اطلاعاتی را از دست بدهید زیرا هر مقداری که بیش از حد بزرگ باشد، بیت‌هایش کپی شده و سپس به روش‌هایی تفسیر می‌شود که ممکن است انتظار نداشته باشید!
+
+۷. دستوراتی وارد کنید تا یک متغیر عدد صحیح `long` (۶۴ بیتی) را به یک متغیر عدد صحیح `int` (۳۲ بیتی) تعریف و اختصاص دهید، هم با استفاده از یک مقدار کوچک که کار می‌کند و هم یک مقدار بیش از حد بزرگ که کار نمی‌کند، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+long e = 10;
+int f = (int)e;
+WriteLine($"e is {e:N0}, f is {f:N0}");
+
+e = long.MaxValue;
+f = (int)e;
+WriteLine($"e is {e:N0}, f is {f:N0}");
+```
+
+۸. کد را اجرا کنید تا نتایج را مشاهده کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+e is 10, f is 10
+e is 9,223,372,036,854,775,807, f is -1
+```
+
+۹. مقدار `e` را به ۵ میلیارد تغییر دهید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+e = 5_000_000_000;
+```
+
+۱۰. کد را اجرا کنید تا نتایج را مشاهده کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+e is 5,000,000,000, f is 705,032,704
+```
+
+پنج میلیارد نمی‌تواند در یک عدد صحیح ۳۲ بیتی جای گیرد، بنابراین سرریز می‌کند (wraps around) به حدود ۷۰۵ میلیون. این همه مربوط به نمایش باینری اعداد صحیح است. در ادامه این فصل، مثال‌های بیشتری از سرریز اعداد صحیح و نحوه مدیریت آن خواهید دید.
