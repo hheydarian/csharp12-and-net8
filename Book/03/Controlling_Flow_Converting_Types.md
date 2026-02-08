@@ -1506,3 +1506,481 @@ Binary Object as bytes:
 EB 53 8B 11 9D 83 E6 4D 45 85 F4 68 F8 18 55 E5 B8 33 C9 B6 F4 00 10 7F CB 59 23 7B 26 18 16 30 00 23 E6 8F A9 10 B0 A9 E6 EC 54 FB 4D 33 E1 68 50 46 C4 1D 5F B1 57 A1 DB D0 60 34 D2 16 93 39 3E FA 0B 08 08 E9 96 5D 64 CF E5 CD C5 64 33 DD 48 4F E8 B0 B4 19 51 CA 03 6F F4 18 E3 E5 C7 0C 11 C7 93 BE 03 35 44 D1 6F AA B0 2F A9 CE D5 03 A8 00 AC 28 8F A5 12 8B 2E BE 40 C4 31 A8 A4 1A
 Binary Object as Base64: 61OLEZ2D5k1FhfRo+BhV5bgzybb0ABB/y1kjeyYYFjAAI+aPqRCwqebsVPtNM+FoUEbEHV+xV6Hb0GA00haTOT76CwgI6ZZdZM/lzcVkM91IT+iwtBlRygNv9Bjj5ccMEceTvgM1RNFvqrAvqc7VA6gArCiPpRKLLr5AxDGopBo=
 ```
+
+---
+
+#### پارس کردن (Parsing) از رشته‌ها به اعداد یا تاریخ و زمان
+
+دومین تبدیل رایج، از رشته‌ها به اعداد یا مقادیر تاریخ و زمان است. متضاد `ToString`، متد `Parse` است. تنها چند نوع دارای متد `Parse` هستند، از جمله تمام انواع عددی و `DateTime`.
+
+بیایید `Parse` را در عمل ببینیم:
+
+۱. در بالای `Program.cs`، فضای نام برای کار با فرهنگ‌ها (cultures) را وارد کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+using System.Globalization; // To use CultureInfo.
+```
+
+۲. در انتهای `Program.cs`، دستوراتی اضافه کنید تا یک عدد صحیح و یک مقدار تاریخ و زمان را از رشته‌ها پارس کنید و سپس نتیجه را در کنسول بنویسید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+// Set the current culture to make sure date parsing works.
+CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+
+int friends = int.Parse("27");
+DateTime birthday = DateTime.Parse("4 June 1980");
+
+WriteLine($"I have {friends} friends to invite to my party.");
+WriteLine($"My birthday is {birthday}.");
+WriteLine($"My birthday is {birthday:D}.");
+```
+
+۳. کد را اجرا کنید و نتیجه را مشاهده کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+I have 27 friends to invite to my party.
+My birthday is 6/4/1980 12:00:00 AM.
+My birthday is Wednesday, June 4, 1980.
+```
+
+به‌طور پیش‌فرض، مقدار تاریخ و زمان با فرمت کوتاه تاریخ و زمان چاپ می‌شود. می‌توانید از کدهای فرمت مانند `D` برای چاپ فقط بخش تاریخ با استفاده از فرمت تاریخ طولانی استفاده کنید.
+
+> **تمرین خوب:**
+> از مشخص‌کننده‌های فرمت استاندارد تاریخ و زمان استفاده کنید، همان‌طور که در لینک زیر نشان داده شده است:
+> [https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings#table-of-format-specifiers](https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings#table-of-format-specifiers)
+
+#### اجتناب از استثناهای Parse با استفاده از متد TryParse
+
+یک مشکل متد `Parse` این است که اگر رشته قابل تبدیل نباشد، خطا می‌دهد:
+
+۱. دستوری تایپ کنید تا سعی کنید رشته‌ای حاوی حروف را به یک متغیر عدد صحیح پارس کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+int count = int.Parse("abc");
+```
+
+۲. کد را اجرا کنید و نتیجه را مشاهده کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+`Unhandled Exception: System.FormatException: Input string was not in a correct format.`
+
+برای جلوگیری از خطاها، می‌توانید از متد `TryParse` استفاده کنید. `TryParse` تلاش می‌کند رشته ورودی را تبدیل کند و اگر بتواند آن را تبدیل کند `true` و اگر نتواند `false` برمی‌گرداند. استثناها عملیات نسبتاً گرانی هستند بنابراین باید وقتی می‌توانید از آن‌ها اجتناب کنید. کلمه کلیدی `out` لازم است تا به متد `TryParse` اجازه دهد متغیر `count` را در صورتی که تبدیل کار کند، تنظیم کند.
+
+بیایید `TryParse` را در عمل ببینیم:
+
+۱. اعلان `int count` را با دستوراتی جایگزین کنید تا از متد `TryParse` استفاده کنید و از کاربر بخواهید تعدادی تخم‌مرغ وارد کند، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+Write("How many eggs are there? ");
+string? input = ReadLine();
+
+if (int.TryParse(input, out int count))
+{
+    WriteLine($"There are {count} eggs.");
+}
+else
+{
+    WriteLine("I could not parse the input.");
+}
+```
+
+۲. کد را اجرا کنید، ۱۲ را وارد کنید و نتیجه را مشاهده کنید:
+
+```text
+How many eggs are there? 12
+There are 12 eggs.
+```
+
+۳. کد را اجرا کنید، `twelve` را وارد کنید و نتیجه را مشاهده کنید:
+
+```text
+How many eggs are there? twelve
+I could not parse the input.
+```
+
+شما همچنین می‌توانید از متدهای نوع `System.Convert` برای تبدیل مقادیر رشته‌ای به انواع دیگر استفاده کنید؛ با این حال، مانند متد `Parse`، اگر نتواند تبدیل کند، خطا می‌دهد.
+
+#### درک قرارداد نام‌گذاری متد Try
+
+.NET از یک امضای استاندارد برای تمام متدهایی که از قرارداد نام‌گذاری `Try` پیروی می‌کنند، استفاده می‌کند. برای هر متدی به نام `Something` که مقداری از یک نوع خاص را برمی‌گرداند، متد `TrySomething` متناظر آن باید یک `bool` برای نشان دادن موفقیت یا شکست برگرداند و از یک پارامتر `out` به جای مقدار بازگشتی استفاده کند. برای مثال:
+
+```csharp
+// A method that might throw an exception.
+int number = int.Parse("123");
+
+// The Try equivalent of the method.
+bool success = int.TryParse("123", out int number);
+
+// Trying to create a Uri for a Web API.
+bool success = Uri.TryCreate("https://localhost:5000/api/customers", UriKind.Absolute, out Uri serviceUrl);
+```
+
+### مدیریت استثناها (Handling Exceptions)
+
+شما چندین سناریو دیده‌اید که در آن‌ها هنگام تبدیل انواع خطاهایی رخ داده است. برخی زبان‌ها وقتی مشکلی پیش می‌آید کدهای خطا برمی‌گردانند. .NET از استثناها استفاده می‌کند که غنی‌تر هستند و فقط برای گزارش شکست طراحی شده‌اند. وقتی این اتفاق می‌افتد، می‌گوییم یک **استثنای زمان اجرا (runtime exception) پرتاب شده است (thrown)**.
+
+وقتی استثنایی پرتاب می‌شود، ریسمان (thread) معلق می‌شود و اگر کدِ فراخواننده (calling code) یک دستور `try-catch` تعریف کرده باشد، به آن فرصت داده می‌شود تا استثنا را مدیریت کند. اگر متد جاری آن را مدیریت نکند، به متد فراخواننده‌ی آن فرصت داده می‌شود و به همین ترتیب تا بالای پشته فراخوانی (call stack).
+
+همان‌طور که دیده‌اید، رفتار پیش‌فرض یک برنامه کنسول این است که پیامی درباره استثنا، شامل یک **stack trace** (ردیابی پشته) چاپ کند و سپس اجرای کد را متوقف کند. برنامه خاتمه می‌یابد. این بهتر از اجازه دادن به ادامه اجرای کد در یک وضعیت بالقوه فاسد است. کد شما فقط باید استثناهایی را بگیرد (catch) و مدیریت کند که آن‌ها را می‌فهمد و می‌تواند به درستی اصلاح کند.
+
+> **تمرین خوب:**
+> تا حد امکان از نوشتن کدی که استثنا پرتاب کند خودداری کنید، شاید با انجام بررسی‌های دستور `if`. گاهی اوقات نمی‌توانید، و گاهی اوقات بهتر است اجازه دهید استثنا توسط یک کامپوننت سطح بالاتر که کد شما را فراخوانی می‌کند گرفته شود.
+
+#### پیچیدن کد مستعد خطا در یک بلوک try
+
+وقتی می‌دانید که یک دستور می‌تواند باعث خطا شود، باید آن دستور را در یک بلوک `try` بپیچید. برای مثال، پارس کردن از متن به عدد می‌تواند باعث خطا شود. هر دستوری در بلوک `catch` تنها در صورتی اجرا می‌شود که استثنایی توسط دستوری در بلوک `try` پرتاب شود. ما مجبور نیستیم کاری در داخل بلوک `catch` انجام دهیم.
+
+بیایید این را در عمل ببینیم:
+
+۱. از ابزار کدنویسی مورد نظر خود استفاده کنید تا یک پروژه جدید Console App / console به نام `HandlingExceptions` به Solution `Chapter03` اضافه کنید.
+
+۲. در `Program.cs`، هر دستور موجودی را حذف کنید و سپس دستوراتی تایپ کنید تا از کاربر بخواهید سن خود را وارد کند و سپس سن او را در کنسول بنویسید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+WriteLine("Before parsing");
+Write("What is your age? ");
+string? input = ReadLine();
+
+try
+{
+    int age = int.Parse(input);
+    WriteLine($"You are {age} years old.");
+}
+catch
+{
+}
+WriteLine("After parsing");
+```
+
+شما پیام کامپایلر زیر را خواهید دید:
+`Warning CS8604 Possible null reference argument for parameter 's' in 'int int.Parse(string s)'.`
+
+به‌طور پیش‌فرض، در پروژه‌های .NET 6 یا بالاتر، مایکروسافت انواع ارجاعی نال‌پذیر (nullable reference types) را فعال می‌کند، بنابراین هشدارهای کامپایلر بیشتری مانند این خواهید دید. در کد تولیدی (production code)، باید کدی برای بررسی `null` اضافه کنید و آن احتمال را به درستی مدیریت کنید.
+
+در این مورد، غیرممکن است که `input` برابر با `null` باشد زیرا کاربر باید برای بازگشت `ReadLine` کلید Enter را فشار دهد، و اگر هیچ کاراکتری تایپ نکرده باشند، متد `ReadLine` یک رشته خالی برمی‌گرداند. بیایید به کامپایلر بگوییم که نیازی نیست این هشدار را به ما نشان دهد:
+
+۱. برای غیرفعال کردن هشدار کامپایلر، `input` را به `!input` تغییر دهید:
+
+```csharp
+int age = int.Parse(input!);
+```
+
+> یک علامت تعجب `!` بعد از یک عبارت، **عملگر بخششِ نال (null-forgiving operator)** نامیده می‌شود و هشدار کامپایلر را غیرفعال می‌کند. این عملگر هیچ اثری در زمان اجرا ندارد.
+
+۲. کد را اجرا کنید، ۴۹ را وارد کنید و نتیجه را مشاهده کنید:
+
+```text
+Before parsing
+What is your age? 49
+You are 49 years old.
+After parsing
+```
+
+۳. کد را اجرا کنید، `Kermit` را وارد کنید و نتیجه را مشاهده کنید:
+
+```text
+Before parsing
+What is your age? Kermit
+After parsing
+```
+
+وقتی کد اجرا شد، استثنای خطا گرفته شد، پیام پیش‌فرض و stack trace چاپ نشدند، و برنامه کنسول به اجرای خود ادامه داد.
+
+> **تمرین خوب:**
+> شما هرگز نباید از یک دستور `catch` خالی مانند این در کد تولیدی استفاده کنید زیرا استثناها را "می‌بلعد" و مشکلات احتمالی را پنهان می‌کند. حداقل باید استثنا را لاگ (log) کنید اگر نمی‌توانید یا نمی‌خواهید آن را به درستی مدیریت کنید، یا آن را دوباره پرتاب (rethrow) کنید تا کد سطح بالاتر بتواند تصمیم بگیرد.
+
+#### گرفتن تمام استثناها
+
+برای دریافت اطلاعات درباره هر نوع استثنایی که ممکن است رخ دهد، می‌توانید متغیری از نوع `System.Exception` در بلوک `catch` تعریف کنید:
+
+۱. یک اعلان متغیر استثنا به بلوک `catch` اضافه کنید و از آن برای نوشتن اطلاعات درباره استثنا در کنسول استفاده کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+catch (Exception ex)
+{
+    WriteLine($"{ex.GetType()} says {ex.Message}");
+}
+```
+
+۲. کد را اجرا کنید، دوباره `Kermit` را وارد کنید و نتیجه را مشاهده کنید:
+
+```text
+Before parsing
+What is your age? Kermit
+System.FormatException says Input string was not in a correct format.
+After parsing
+```
+
+#### گرفتن استثناهای خاص
+
+حالا که می‌دانیم کدام نوع خاص از استثنا رخ داده است، می‌توانیم کد خود را با گرفتن **فقط آن نوع استثنا** و سفارشی کردن پیامی که به کاربر نمایش می‌دهیم، بهبود بخشیم:
+
+۱. بلوک `catch` موجود را رها کنید و، **بالای** آن، یک بلوک `catch` جدید برای نوع استثنای فرمت اضافه کنید، همان‌طور که در کد زیر برجسته شده است:
+
+```csharp
+catch (FormatException)
+{
+    WriteLine("The age you entered is not a valid number format.");
+}
+catch (Exception ex)
+{
+    WriteLine($"{ex.GetType()} says {ex.Message}");
+}
+```
+
+۲. کد را اجرا کنید، دوباره `Kermit` را وارد کنید و نتیجه را مشاهده کنید:
+
+```text
+Before parsing
+What is your age? Kermit
+The age you entered is not a valid number format.
+After parsing
+```
+
+دلیل اینکه می‌خواهیم `catch` عمومی‌تر را در پایین نگه داریم این است که ممکن است انواع دیگری از استثناها رخ دهند.
+
+۳. کد را اجرا کنید، `9876543210` را وارد کنید و نتیجه را مشاهده کنید:
+
+```text
+Before parsing
+What is your age? 9876543210
+System.OverflowException says Value was either too large or too small for an Int32.
+After parsing
+```
+
+بیایید یک بلوک `catch` دیگر برای این نوع استثنا اضافه کنیم.
+
+۴. بلوک‌های `catch` موجود را رها کنید، و یک بلوک `catch` جدید برای نوع استثنای سرریز (overflow) اضافه کنید، همان‌طور که در کد زیر برجسته شده است:
+
+```csharp
+catch (OverflowException)
+{
+    WriteLine("Your age is a valid number format but it is either too big or small.");
+}
+catch (FormatException)
+{
+    WriteLine("The age you entered is not a valid number format.");
+}
+```
+
+۵. کد را اجرا کنید، `9876543210` را وارد کنید و نتیجه را مشاهده کنید:
+
+```text
+Before parsing
+What is your age? 9876543210
+Your age is a valid number format but it is either too big or small.
+After parsing
+```
+
+ترتیبی که استثناها را می‌گیرید مهم است. ترتیب صحیح مربوط به سلسله‌مراتب ارث‌بری انواع استثنا است.
+
+> **تمرین خوب:**
+> از گرفتن بیش از حد استثناها (over-catching) اجتناب کنید. آن‌ها اغلب باید اجازه داشته باشند تا در پشته فراخوانی بالا بروند تا در سطحی مدیریت شوند که اطلاعات بیشتری درباره شرایطی که می‌تواند منطق نحوه مدیریت آن‌ها را تغییر دهد، شناخته شده است.
+
+#### گرفتن با فیلترها
+
+شما همچنین می‌توانید با استفاده از کلمه کلیدی `when` فیلترهایی به دستور `catch` اضافه کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+Write("Enter an amount: ");
+string amount = ReadLine()!;
+if (string.IsNullOrEmpty(amount)) return;
+
+try
+{
+    decimal amountValue = decimal.Parse(amount);
+    WriteLine($"Amount formatted as currency: {amountValue:C}");
+}
+catch (FormatException) when (amount.Contains("$"))
+{
+    WriteLine("Amounts cannot use the dollar sign!");
+}
+catch (FormatException)
+{
+    WriteLine("Amounts must only contain digits!");
+}
+```
+
+### بررسی سرریز (Checking for Overflow)
+
+پیش‌تر دیدیم که هنگام تبدیل (casting) بین انواع عددی، ممکن است اطلاعات از دست برود، برای مثال، هنگام تبدیل از متغیر `long` به `int`. اگر مقدار ذخیره شده در یک نوع خیلی بزرگ باشد، سرریز (overflow) خواهد کرد.
+
+#### پرتاب استثناهای سرریز با دستور checked
+
+دستور `checked` به .NET می‌گوید که وقتی سرریز اتفاق می‌افتد به جای اینکه اجازه دهد به‌صورت بی‌صدا اتفاق بیفتد (که به‌طور پیش‌فرض برای دلایل عملکردی انجام می‌شود)، یک استثنا پرتاب کند.
+
+بیایید این را در عمل ببینیم:
+
+۱. در `Program.cs`، دستوراتی تایپ کنید تا یک عدد صحیح را به یک کمتر از حداکثر مقدار ممکنش تعریف و مقداردهی کنید، و سپس آن را افزایش دهید و مقدارش را سه بار در کنسول بنویسید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+int x = int.MaxValue - 1;
+WriteLine($"Initial value: {x}");
+x++;
+WriteLine($"After incrementing: {x}");
+x++;
+WriteLine($"After incrementing: {x}");
+x++;
+WriteLine($"After incrementing: {x}");
+```
+
+۲. کد را اجرا کنید و نتیجه را مشاهده کنید که نشان می‌دهد مقدار به‌صورت بی‌صدا سرریز می‌کند و به مقادیر منفی بزرگ تبدیل می‌شود:
+
+```text
+Initial value: 2147483646
+After incrementing: 2147483647
+After incrementing: -2147483648
+After incrementing: -2147483647
+```
+
+۳. حالا، بیایید کاری کنیم که کامپایلر با پیچیدن دستورات در یک بلوک دستور `checked`، درباره سرریز به ما هشدار دهد، همان‌طور که در کد زیر برجسته شده است:
+
+```csharp
+checked
+{
+    int x = int.MaxValue - 1;
+    WriteLine($"Initial value: {x}");
+    x++;
+    WriteLine($"After incrementing: {x}");
+    x++;
+    WriteLine($"After incrementing: {x}");
+    x++;
+    WriteLine($"After incrementing: {x}");
+}
+```
+
+۴. کد را اجرا کنید و نتیجه را مشاهده کنید که نشان می‌دهد سرریز بررسی می‌شود و باعث پرتاب یک استثنا می‌شود:
+`Unhandled Exception: System.OverflowException: Arithmetic operation resulted in an overflow.`
+
+۵. درست مانند هر استثنای دیگری، باید این دستورات را در یک بلوک دستور `try` بپیچیم و پیام خطای بهتری برای کاربر نمایش دهیم:
+
+```csharp
+try
+{
+    // previous code goes here
+}
+catch (OverflowException)
+{
+    WriteLine("The code overflowed but I caught the exception.");
+}
+```
+
+۶. کد را اجرا کنید و نتیجه را مشاهده کنید:
+
+```text
+Initial value: 2147483646
+After incrementing: 2147483647
+The code overflowed but I caught the exception.
+```
+
+#### غیرفعال کردن بررسی‌های سرریز کامپایلر با دستور unchecked
+
+بخش قبلی درباره رفتار سرریز پیش‌فرض در زمان اجرا و نحوه استفاده از دستور `checked` برای تغییر آن رفتار بود. این بخش درباره رفتار سرریز در زمان کامپایل و نحوه استفاده از دستور `unchecked` برای تغییر آن رفتار است.
+
+یک کلمه کلیدی مرتبط، `unchecked` است. این کلمه کلیدی بررسی‌های سرریز انجام شده توسط کامپایلر را در یک بلوک کد خاموش می‌کند.
+
+بیایید ببینیم چگونه این کار را انجام دهیم:
+
+۱. دستور زیر را در انتهای دستورات قبلی تایپ کنید. کامپایلر این دستور را کامپایل نخواهد کرد زیرا می‌داند که سرریز خواهد کرد:
+
+```csharp
+int y = int.MaxValue + 1;
+```
+
+۲. ماوس خود را روی خطا نگه دارید، و توجه کنید که یک بررسی زمان کامپایل به عنوان پیام خطا نشان داده می‌شود، همان‌طور که در شکل ۳.۴ نشان داده شده است:
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/03/4.png)
+</div>
+
+۳. برای غیرفعال کردن بررسی‌های زمان کامپایل، دستور را در یک بلوک `unchecked` بپیچید، مقدار `y` را در کنسول بنویسید، آن را کاهش دهید، و تکرار کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+unchecked
+{
+    int y = int.MaxValue + 1;
+    WriteLine($"Initial value: {y}");
+    y--;
+    WriteLine($"After decrementing: {y}");
+    y--;
+    WriteLine($"After decrementing: {y}");
+}
+```
+
+۴. کد را اجرا کنید و نتایج را مشاهده کنید:
+
+```text
+Initial value: -2147483648
+After decrementing: 2147483647
+After decrementing: 2147483646
+```
+
+البته، به ندرت پیش می‌آید که بخواهید صریحاً چنین بررسی‌ای را خاموش کنید زیرا اجازه می‌دهد سرریز رخ دهد. اما شاید بتوانید سناریویی را تصور کنید که در آن ممکن است بخواهید آن رفتار را داشته باشید.
+
+---
+
+### تمرین و کاوش
+
+دانش و درک خود را با پاسخ دادن به برخی سوالات، انجام برخی تمرین‌های عملی و کاوش در موضوعات این فصل با تحقیقات عمیق‌تر، محک بزنید.
+
+#### تمرین ۳.۱ – دانش خود را بیازمایید
+
+به سوالات زیر پاسخ دهید:
+۱. وقتی یک متغیر `int` را بر ۰ تقسیم می‌کنید چه اتفاقی می‌افتد؟
+۲. وقتی یک متغیر `double` را بر ۰ تقسیم می‌کنید چه اتفاقی می‌افتد؟
+۳. وقتی یک متغیر `int` را سرریز می‌کنید، یعنی مقداری فراتر از محدوده آن تنظیم می‌کنید، چه اتفاقی می‌افتد؟
+۴. تفاوت بین `x = y++;` و `x = ++y;` چیست؟
+۵. تفاوت بین `break` ،`continue` و `return` هنگام استفاده در یک دستور حلقه چیست؟
+۶. سه بخش یک دستور `for` چیست و کدام یک از آن‌ها اجباری هستند؟
+۷. تفاوت بین عملگرهای `=` و `==` چیست؟
+۸. آیا دستور `for ( ; ; ) ;` کامپایل می‌شود؟
+۹. زیرخط `_` در یک عبارت `switch` نماینده چیست؟
+۱۰. یک شیء باید چه اینترفیسی را "پیاده‌سازی" کند تا بتوان با استفاده از دستور `foreach` روی آن برشماری کرد؟
+
+#### تمرین ۳.۲ – کاوش حلقه‌ها و سرریز
+
+اگر این کد اجرا شود چه اتفاقی خواهد افتاد؟
+
+```csharp
+int max = 500;
+for (byte i = 0; i < max; i++)
+{
+    WriteLine(i);
+}
+```
+
+یک برنامه کنسول در `Chapter03` به نام `Ch03Ex02LoopsAndOverflow` ایجاد کنید و کد فوق را وارد کنید. برنامه کنسول را اجرا کنید و خروجی را مشاهده نمایید. چه اتفاقی می‌افتد؟ چه کدی می‌توانید اضافه کنید (هیچ‌یک از کدهای قبلی را تغییر ندهید) تا درباره مشکل به ما هشدار دهد؟
+
+#### تمرین ۳.۳ – دانش خود را درباره عملگرها بیازمایید
+
+مقادیر `x` و `y` پس از اجرای دستورات زیر چیست؟
+یک برنامه کنسول در `Chapter03` به نام `Ch03Ex03Operators` ایجاد کنید تا فرضیات خود را آزمایش کنید:
+
+1. `x = 3; y = 2 + ++x;`
+2. `x = 3 << 2; y = 10 >> 1;`
+3. `x = 10 & 8; y = 10 | 7;`
+
+#### تمرین ۳.۴ – تمرین حلقه‌ها و عملگرها
+
+**FizzBuzz** یک بازی گروهی برای کودکان است تا به آن‌ها درباره تقسیم آموزش دهد. بازیکنان به نوبت به‌صورت افزایشی می‌شمارند، و هر عددی را که بر ۳ بخش‌پذیر است با کلمه **fizz**، هر عددی که بر ۵ بخش‌پذیر است با کلمه **buzz**، و هر عددی که بر هر دو بخش‌پذیر است با **fizzbuzz** جایگزین می‌کنند.
+
+یک برنامه کنسول در `Chapter03` به نام `Ch03Ex04FizzBuzz` ایجاد کنید که یک بازی FizzBuzz شبیه‌سازی شده را که تا ۱۰۰ می‌شمارد، خروجی دهد. خروجی باید چیزی شبیه به شکل ۳.۵ باشد:
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/03/5.png)
+</div>
+
+#### تمرین ۳.۵ – تمرین مدیریت استثناها
+
+یک برنامه کنسول در `Chapter03` به نام `Ch03Ex05Exceptions` ایجاد کنید که از کاربر دو عدد در محدوده ۰-۲۵۵ بخواهد و سپس عدد اول را بر عدد دوم تقسیم کند. مدیریت‌کننده‌های استثنا (exception handlers) بنویسید تا هر خطای پرتاب شده‌ای را بگیرند.
+
+#### تمرین ۳.۶ – کاوش C# 101 notebooks
+
+از لینک‌های نوت‌بوک‌ها و ویدیوها در صفحه زیر برای دیدن مثال‌های تعاملی C# با استفاده از Polyglot Notebooks استفاده کنید:
+[https://github.com/dotnet/csharp-notebooks#c-101](https://github.com/dotnet/csharp-notebooks#c-101)
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/03/6.png)
+</div>
+
