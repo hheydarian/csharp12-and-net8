@@ -1984,3 +1984,19 @@ for (byte i = 0; i < max; i++)
 ![Conventions-UsedThis-Book](../../assets/images/03/6.png)
 </div>
 
+#### تمرین ۳.۷ – کاوش موضوعات
+
+برای یادگیری جزئیات بیشتر درباره موضوعات پوشش داده شده در این فصل، از لینک‌های صفحه زیر استفاده کنید:
+[https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-3--controlling-flow-converting-types-and-handling-exceptions](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-3--controlling-flow-converting-types-and-handling-exceptions)
+
+### خلاصه
+
+در این فصل، یاد گرفتید که چگونه:
+
+* از عملگرها برای انجام وظایف ساده استفاده کنید.
+* از دستورات شاخه‌گذاری و حلقه برای پیاده‌سازی منطق استفاده کنید.
+* با آرایه‌های تک‌بعدی و چندبعدی کار کنید.
+* بین انواع تبدیل انجام دهید.
+* استثناها را بگیرید (Catch) و سرریز اعداد صحیح را مدیریت کنید.
+
+اکنون آماده هستید تا یاد بگیرید چگونه با تعریف توابع، از بلوک‌های کد استفاده مجدد کنید، چگونه مقادیر را به آن‌ها پاس دهید و مقادیر را از آن‌ها بازپس گیرید، و چگونه با استفاده از ابزارهای اشکال‌زدایی (debugging) و تست، باگ‌ها را در کد خود ردیابی و رفع کنید!
