@@ -1136,3 +1136,196 @@ Trace.Close();
 ۶. روی دسکتاپ خود، فایل `log.txt` را باز کنید و توجه کنید که هم پیام `Debug says, I am watching!` و هم پیام `Trace says, I am watching!` را شامل می‌شود.
 
 > **روش صحیح (Good Practice):** هنگام اجرا با پیکربندی **Debug**، هم `Debug` و هم `Trace` فعال هستند و در هر Trace Listenerای می‌نویسند. هنگام اجرا با پیکربندی **Release**، فقط `Trace` در Trace Listenerها می‌نویسد. بنابراین می‌توانید آزادانه از فراخوانی‌های `Debug.WriteLine` در سراسر کد خود استفاده کنید، با دانستن اینکه هنگام بیلد نسخه ریلیز برنامه، آن‌ها به‌صورت خودکار حذف می‌شوند و بنابراین بر عملکرد تأثیر نمی‌گذارند.
+
+### تغییر سطح لاگ‌ها (Switching trace levels)
+
+فراخوانی‌های `Trace.WriteLine` حتی پس از انتشار (Release) در کد شما باقی می‌مانند. بنابراین، عالی خواهد بود اگر کنترل دقیقی بر زمان خروجی دادن آن‌ها داشته باشیم. این کاری است که می‌توانیم با یک **Trace Switch** انجام دهیم.
+
+مقدار یک Trace Switch را می‌توان با استفاده از یک عدد یا یک کلمه تنظیم کرد. برای مثال، عدد ۳ می‌تواند با کلمه `Info` جایگزین شود، همان‌طور که در جدول ۴.۱ نشان داده شده است:
+
+**جدول ۴.۱: سطوح Trace**
+
+| عدد | کلمه | توضیحات |
+| :--- | :--- | :--- |
+| 0 | Off | هیچ چیزی خروجی نمی‌دهد. |
+| 1 | Error | فقط خطاها را خروجی می‌دهد. |
+| 2 | Warning | خطاها و هشدارها را خروجی می‌دهد. |
+| 3 | Info | خطاها، هشدارها و اطلاعات را خروجی می‌دهد. |
+| 4 | Verbose | تمام سطوح را خروجی می‌دهد. |
+
+بیایید استفاده از Trace Switchها را بررسی کنیم. ابتدا، چند پکیج NuGet به پروژه خود اضافه می‌کنیم تا امکان بارگذاری تنظیمات پیکربندی از یک فایل `appsettings.json` فراهم شود.
+
+#### افزودن پکیج‌ها به پروژه در Visual Studio 2022
+
+ویژوال استودیو دارای یک رابط کاربری گرافیکی برای افزودن پکیج‌ها است:
+
+۱. در **Solution Explorer**، روی پروژه `Instrumenting` کلیک راست کرده و **Manage NuGet Packages** را انتخاب کنید.
+۲. تب **Browse** را انتخاب کنید.
+۳. هر یک از این پکیج‌های NuGet را جستجو کرده و روی دکمه **Install** کلیک کنید، همان‌طور که در شکل ۴.۱۹ نشان داده شده است:
+
+* `Microsoft.Extensions.Configuration.Binder`
+* `Microsoft.Extensions.Configuration.Json`
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/04/19.png)
+</div>
+
+> **روش صحیح (Good Practice):** برای استفاده از پکیج‌های پیش‌نمایش (Preview)، مثلاً در ژوئن ۲۰۲۳ برای .NET 8 یا در طول سال ۲۰۲۴ برای .NET 9، باید چک‌باکس **Include prerelease** را انتخاب کنید (شکل ۴.۱۹). همچنین پکیج‌هایی برای بارگذاری پیکربندی از فایل‌های XML، فایل‌های INI، متغیرهای محیطی و خط فرمان وجود دارد. از مناسب‌ترین تکنیک برای تنظیم پیکربندی در پروژه‌های خود استفاده کنید.
+
+#### افزودن پکیج‌ها به پروژه در Visual Studio Code
+
+ویژوال استودیو کد مکانیزمی گرافیکی برای افزودن پکیج‌های NuGet ندارد، بنابراین از ابزار خط فرمان استفاده خواهیم کرد:
+
+۱. به پنجره **TERMINAL** برای پروژه `Instrumenting` بروید.
+۲. دستور زیر را وارد کنید:
+`dotnet add package Microsoft.Extensions.Configuration.Binder`
+۳. دستور زیر را وارد کنید:
+`dotnet add package Microsoft.Extensions.Configuration.Json`
+
+> `dotnet add package` یک ارجاع به پکیج NuGet به فایل پروژه شما اضافه می‌کند و پکیج در طول فرآیند بیلد دانلود می‌شود.
+> `dotnet add reference` یک ارجاع پروژه-به-پروژه به فایل پروژه شما اضافه می‌کند. پروژه ارجاع داده شده در صورت نیاز در طول فرآیند بیلد کامپایل می‌شود.
+
+#### بررسی پکیج‌های پروژه برای کار با پیکربندی
+
+پس از افزودن پکیج‌های NuGet، می‌توانیم ارجاعات را در فایل پروژه ببینیم. ارجاعات پکیج به بزرگی و کوچکی حروف حساس نیستند. بیایید ارجاعات پکیج را بررسی کنیم:
+
+۱. فایل `Instrumenting.csproj` را باز کنید و بخش `<ItemGroup>` را با پکیج‌های NuGet اضافه شده مشاهده کنید:
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    ...
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+  </ItemGroup>
+</Project>
+```
+
+> پس از انتشار نهایی .NET 7، مایکروسافت باگی را در نسخه 7.0.3 پکیج `Microsoft.Extensions.Configuration.Binder` برطرف کرد. این باگ باعث می‌شد به دلیل نحوه خواندن تنظیمات در نسخه قبلی، استثنایی پرتاب شود. این به عنوان یک "پسرفت رفع باگ" (Bug fix regression) شناخته می‌شود. تست‌های واحد خوب باید اصلاحاتی را که باعث مشکلات دیگر می‌شوند شناسایی کنند. این همچنین مثالی از مشکلات غیرمنتظره با نسخه‌های آینده پکیج‌ها است. اگر با پکیج جدیدی مشکل غیرمنتظره‌ای داشتید، نسخه قبلی را امتحان کنید.
+
+۲. فایلی به نام `appsettings.json` به پوشه پروژه `Instrumenting` اضافه کنید.
+۳. در `appsettings.json`، تنظیمی به نام `PacktSwitch` با مقدار `Value` برابر با `Info` تعریف کنید:
+
+```json
+{
+  "PacktSwitch": {
+    "Value": "Info"
+  }
+}
+```
+
+> تا قبل از نسخه 7.0.3 پکیج `Microsoft.Extensions.Configuration.Binder`، می‌توانستید ویژگی `Level` را تنظیم کنید (مثلاً `"Level": "Info"`). پس از رفع باگ، این کار باعث پرتاب استثنا می‌شود. در عوض، باید ویژگی `Value` (یا هر دو) را تنظیم کنیم. این به دلیل نیاز یک کلاس داخلی به تنظیم شدن `Value` است.
+
+۴. در **Visual Studio 2022** و **JetBrains Rider**، در Solution Explorer روی `appsettings.json` کلیک راست کرده، **Properties** را انتخاب کنید و سپس **Copy to Output Directory** را به **Copy always** تغییر دهید. این کار ضروری است زیرا برخلاف VS Code که برنامه را در پوشه پروژه اجرا می‌کند، ویژوال استودیو برنامه را در مسیر `bin\Debug\net8.0` یا `bin\Release\net8.0` اجرا می‌کند.
+برای اطمینان از صحت انجام کار، عنصر اضافه شده به فایل پروژه را بررسی کنید:
+
+```xml
+<ItemGroup>
+  <None Update="appsettings.json">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </None>
+</ItemGroup>
+```
+
+> ویژگی Copy to Output Directory ممکن است غیرقابل اعتماد باشد. در کد خود، ما این فایل را می‌خوانیم و خروجی می‌دهیم تا دقیقاً ببینیم چه چیزی پردازش می‌شود و هرگونه مشکل در کپی نشدن صحیح تغییرات را متوجه شویم.
+
+۵. در بالای `Program.cs`، فضای نام `Microsoft.Extensions.Configuration` را ایمپورت کنید:
+
+```csharp
+using Microsoft.Extensions.Configuration; // برای استفاده از ConfigurationBuilder
+```
+
+۶. قبل از دستوراتی که `Debug` و `Trace` را می‌بندند، کدهایی اضافه کنید تا یک Configuration Builder بسازید که در پوشه جاری به دنبال `appsettings.json` بگردد، پیکربندی را بیلد کند، یک Trace Switch بسازد، سطح آن را با Bind کردن به پیکربندی تنظیم کند و سپس چهار سطح Trace Switch را خروجی دهد:
+
+```csharp
+string settingsFile = "appsettings.json";
+string settingsPath = Path.Combine(Directory.GetCurrentDirectory(), settingsFile);
+
+Console.WriteLine("Processing: {0}", settingsPath);
+Console.WriteLine("--{0} contents--", settingsFile);
+Console.WriteLine(File.ReadAllText(settingsPath));
+Console.WriteLine("----");
+
+ConfigurationBuilder builder = new();
+builder.SetBasePath(Directory.GetCurrentDirectory());
+
+// فایل تنظیمات را به پیکربندی اضافه کنید و آن را اجباری کنید
+// تا اگر فایل پیدا نشد، استثنا پرتاب شود.
+builder.AddJsonFile(settingsFile, optional: false, reloadOnChange: true);
+
+IConfigurationRoot configuration = builder.Build();
+
+TraceSwitch ts = new(
+  displayName: "PacktSwitch",
+  description: "This switch is set via a JSON config.");
+
+configuration.GetSection("PacktSwitch").Bind(ts);
+
+Console.WriteLine($"Trace switch value: {ts.Value}");
+Console.WriteLine($"Trace switch level: {ts.Level}");
+
+Trace.WriteLineIf(ts.TraceError, "Trace error");
+Trace.WriteLineIf(ts.TraceWarning, "Trace warning");
+Trace.WriteLineIf(ts.TraceInfo, "Trace information");
+Trace.WriteLineIf(ts.TraceVerbose, "Trace verbose");
+```
+
+> اگر فایل `appsettings.json` پیدا نشود، استثنای `System.IO.FileNotFoundException` پرتاب خواهد شد.
+
+۷. بعد از دستوراتی که `Debug` و `Trace` را می‌بندند، کدی اضافه کنید تا از کاربر بخواهد برای خروج Enter بزند:
+
+```csharp
+// Close the text file (also flushes) and release resources.
+Debug.Close();
+Trace.Close();
+
+Console.WriteLine("Press enter to exit.");
+Console.ReadLine();
+```
+
+> **روش صحیح (Good Practice):** مراقب باشید `Debug` یا `Trace` را قبل از اتمام کار با آن‌ها نبندید. اگر آن‌ها را ببندید و سپس در آن‌ها بنویسید، هیچ اتفاقی نمی‌افتد!
+
+۸. یک **Breakpoint** روی دستور `Bind` قرار دهید.
+۹. دیباگ پروژه `Instrumenting` را شروع کنید.
+۱۰. در پنجره **VARIABLES** یا **Locals**، متغیر `ts` را باز کنید و توجه کنید که `Level` آن `Off` است و `TraceError` و بقیه `false` هستند (شکل ۴.۲۰).
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/04/20.png)
+</div>
+
+۱۱. با زدن **Step Into** یا **F11** وارد فراخوانی متد `Bind` شوید. توجه کنید که ویژگی‌های `SwitchSetting`، `Value` و `Level` متغیر `ts` به سطح `Info` (یعنی ۳) به‌روزرسانی می‌شوند و سه تا از چهار ویژگی `TraceX` به `true` تغییر می‌کنند (شکل ۴.۲۱).
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/04/21.png)
+</div>
+
+۱۲. از روی چهار فراخوانی `Trace.WriteLineIf` عبور کنید (Step Over) و توجه کنید که تمام سطوح تا `Info` در **DEBUG CONSOLE** یا پنجره Output نوشته می‌شوند، اما `Verbose` نوشته نمی‌شود.
+۱۳. دیباگ را متوقف کنید.
+۱۴. فایل `appsettings.json` را تغییر دهید تا مقدار سطح را روی ۲ (معادل Warning) تنظیم کنید:
+
+```json
+{
+  "PacktSwitch": {
+    "Value": "2"
+  }
+}
+```
+
+۱۵. تغییرات را ذخیره کنید.
+۱۶. در **Visual Studio Code**، با دستور زیر برنامه را اجرا کنید:
+`dotnet run --configuration Release`
+۱۷. در **Visual Studio 2022**، حالت **Release** را انتخاب کرده و با **Start Without Debugging** اجرا کنید.
+۱۸. فایل `log.txt` را باز کنید و توجه کنید که این بار، تنها سطوح `Trace error` و `Trace warning` خروجی داده شده‌اند:
+
+```text
+Trace says, I am watching!
+Trace error
+Trace warning
+```
+
+> اگر آرگومان `--configuration` پاس داده نشود، سطح پیش‌فرض Trace Switch روی `Off` (یعنی ۰) خواهد بود، بنابراین هیچ‌یک از سطوح سوئیچ خروجی داده نخواهند شد.
