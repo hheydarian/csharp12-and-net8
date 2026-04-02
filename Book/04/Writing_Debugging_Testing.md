@@ -1335,3 +1335,51 @@ Trace warning
 هنگام نوشتن در لاگ، اغلب می‌خواهید نام فایل کد منبع، نام متد و شماره خط را نیز وارد کنید. در C# 10 و نسخه‌های جدیدتر، حتی می‌توانید هر عبارت ارسالی را به عنوان یک مقدار رشته‌ای به یک تابع دریافت کنید تا آن‌ها را ثبت کنید.
 
 می‌توانید تمام این اطلاعات را از کامپایلر با تزئین پارامترهای تابع با ویژگی‌های خاص، همانطور که در جدول 4.2 نشان داده شده است، دریافت کنید.
+
+| مثال پارامتر | توضیحات |
+|---|---|
+| `[CallerMemberName] string member = ""` | پارامتر رشته‌ای به نام `member` را به نام متد یا property که در حال اجرای متد تعریف‌کننده این پارامتر است، تنظیم می‌کند. |
+| `[CallerFilePath] string filepath = ""` | پارامتر رشته‌ای به نام `filepath` را به نام فایل کد منبع که شامل دستور اجراکننده متد تعریف‌کننده این پارامتر است، تنظیم می‌کند. |
+| `[CallerLineNumber] int line = 0` | پارامتر int به نام `line` را به شماره خط در فایل کد منبع دستور اجراکننده متد تعریف‌کننده این پارامتر، تنظیم می‌کند. |
+| `[CallerArgumentExpression(nameof(argumentExpression))] string expression = ""` | پارامتر رشته‌ای به نام `expression` را به عبارتی که به پارامتر به نام `argumentExpression` ارسال شده است، تنظیم می‌کند. |
+
+جدول 4.2: ویژگی‌ها برای دریافت اطلاعات درباره فراخواننده متد
+
+برای این‌که بتوانید از این ویژگی‌ها استفاده کنید، باید این پارامترها را با مقدارهای پیش‌فرض «اختیاری» کنید.
+
+بیایید مقداری کد را در عمل ببینیم:
+
+1. در پروژهٔ **Instrumenting**، یک فایل کلاس با نام **Program.Functions.cs** اضافه کنید.
+2. تمام دستورهای موجود را حذف کنید و سپس کدی اضافه کنید که تابعی با نام **LogSourceDetails** تعریف می‌کند. این تابع از چهار ویژگی خاص استفاده می‌کند تا اطلاعاتی دربارهٔ کدی که آن را فراخوانی کرده ثبت کند؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+using System.Diagnostics; // To use Trace.
+using System.Runtime.CompilerServices; // To use [CallerX] attributes
+
+partial class Program
+{
+  static void LogSourceDetails(
+    bool condition,
+    [CallerMemberName] string member = "",
+    [CallerFilePath] string filepath = "", 
+    [CallerLineNumber] int line = 0,
+    [CallerArgumentExpression(nameof(condition))] string expression = "")
+  {
+    Trace.WriteLine(string.Format(
+      "[{0}]\n  {1} on line {2}. Expression: {3}",
+      filepath, member, line, expression));
+  }
+}
+```
+
+1. در فایل **Program.cs**، در انتهای فایل و قبل از فراخوانی‌های مربوط به بستن Debug و Trace، دستورهایی اضافه کنید تا یک متغیر تعریف و مقداردهی شود؛ متغیری که در عبارتی که به تابع **LogSourceDetails** فرستاده می‌شود مورد استفاده قرار می‌گیرد. همان‌طور که در کد زیر مشخص شده است:
+
+```csharp
+int unitsInStock = 12;
+LogSourceDetails(unitsInStock > 10);
+
+// Close the text file (also flushes) and release resources.
+Debug.Close();
+Trace.Close();
+```
+
