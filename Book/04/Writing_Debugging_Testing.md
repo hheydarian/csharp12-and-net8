@@ -1423,3 +1423,86 @@ Trace.Close();
 | **User Acceptance Tests** (تست‌های پذیرش کاربر) | آیا کاربران می‌توانند با خوشحالی کار خود را با استفاده از نرم‌افزار شما تکمیل کنند. |
 
 جدول 4.3: انواع تست
+
+**ساخت یک کتابخانهٔ کلاس که نیاز به تست دارد**
+
+ابتدا، تابعی را ایجاد می‌کنیم که نیاز به تست دارد. این تابع را در یک پروژهٔ کتابخانهٔ کلاس (Class Library) که جدا از پروژهٔ برنامهٔ کنسول است، ایجاد خواهیم کرد. کتابخانهٔ کلاس بسته‌ای از کد است که می‌تواند توسط سایر برنامه‌های دات‌نت توزیع شده و به آن‌ها ارجاع داده شود.
+
+**مراحل:**
+
+1. **ایجاد پروژهٔ کتابخانهٔ کلاس `CalculatorLib`:**
+    با استفاده از ابزار کدنویسی مورد علاقه‌تان، یک پروژهٔ جدید از نوع **Class Library** با نام `CalculatorLib` در Solution اصلی `Chapter04` اضافه کنید. (شما تا اینجا حدود دوازده پروژهٔ برنامهٔ کنسول ایجاد کرده‌اید و آن‌ها را به Solution اضافه کرده‌اید. تنها تفاوت هنگام افزودن یک Class Library، انتخاب قالب پروژهٔ متفاوت است. بقیهٔ مراحل مشابه افزودن یک پروژهٔ Console App هستند.)
+
+    * **اگر از Visual Studio 2022 استفاده می‌کنید:**
+        1. به مسیر `File | Add | New Project` بروید.
+        2. در پنجرهٔ `Add a new project`، عبارت `Class Library [C#]` را جستجو کرده و انتخاب کنید، سپس روی `Next` کلیک کنید.
+        3. در پنجرهٔ `Configure your new project`، برای `Project name`، مقدار `CalculatorLib` را وارد کنید، `location` را همان `C:\cs12dotnet8\Chapter04` بگذارید و سپس روی `Next` کلیک کنید.
+        4. در پنجرهٔ `Additional information`، نسخهٔ `.NET 8.0 (Long Term Support)` را انتخاب کرده و روی `Create` کلیک کنید.
+
+    * **اگر از Visual Studio Code استفاده می‌کنید:**
+        5.  در پنجرهٔ `TERMINAL`، به پوشهٔ `Chapter04` بروید.
+        6.  از دستور `dotnet CLI` برای ایجاد یک پروژهٔ جدید کتابخانهٔ کلاس به نام `CalculatorLib` استفاده کنید:
+            ```bash
+            dotnet new classlib -o CalculatorLib
+            ```
+        7.  از دستور `dotnet CLI` برای افزودن پوشهٔ پروژهٔ جدید به Solution استفاده کنید:
+            ```bash
+            dotnet sln add CalculatorLib
+            ```
+        8.  نتایج را مشاهده کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+            ```
+        Project `CalculatorLib\CalculatorLib.csproj` added to the solution.
+            ```
+
+2. **تغییر نام فایل `Class1.cs`:**
+    برای همهٔ ویرایشگرهای کد، در پروژهٔ `CalculatorLib`، فایل با نام `Class1.cs` را به `Calculator.cs` تغییر نام دهید.
+
+3. **تعریف کلاس `Calculator` با یک باگ عمدی:**
+    فایل `Calculator.cs` را ویرایش کرده و آن را برای تعریف کلاس `Calculator` (که یک باگ عمدی دارد!) مطابق کد زیر تغییر دهید:
+
+    ```csharp
+    namespace CalculatorLib;
+
+    public class Calculator
+    {
+      public double Add(double a, double b)
+      {
+        // Chapter 4 - 217
+        return a * b; // <-- باگ عمدی: باید a + b باشد، نه a * b
+      }
+    }
+    ```
+
+    **نکته:** همان‌طور که می‌بینید، تابع `Add` به‌جای جمع کردن دو عدد (`a + b`)، آن‌ها را ضرب می‌کند (`a * b`)؛ این یک باگ عمدی برای مراحل بعدی تست است!
+
+4. **کامپایل پروژهٔ کتابخانهٔ کلاس:**
+    * **در Visual Studio 2022:** به مسیر `Build | Build CalculatorLib` بروید.
+    * **در Visual Studio Code:** در یک پنجرهٔ `TERMINAL` برای پوشهٔ `CalculatorLib`، دستور زیر را وارد کنید:
+
+        ```bash
+        dotnet build
+        ```
+
+        (شما همچنین می‌توانید این دستور را در پوشهٔ `Chapter04` اجرا کنید، اما این کار کل Solution را بیلد می‌کند که در این سناریو ضروری نیست.)
+
+5. **ایجاد پروژهٔ تست واحد `CalculatorLibUnitTests`:**
+    با استفاده از ابزار کدنویسی مورد علاقه‌تان، یک پروژهٔ جدید از نوع **xUnit Test Project [C#]** با نام `CalculatorLibUnitTests` به Solution `Chapter04` اضافه کنید. برای مثال، در خط فرمان یا ترمینال در پوشهٔ `Chapter04`، دستورات زیر را وارد کنید:
+
+    ```bash
+    dotnet new xunit -o CalculatorLibUnitTests
+    dotnet sln add CalculatorLibUnitTests
+    ```
+
+6. **افزودن ارجاع پروژه (Project Reference):**
+    در پروژهٔ `CalculatorLibUnitTests`، یک ارجاع پروژه به پروژهٔ `CalculatorLib` اضافه کنید:
+
+    * **اگر از Visual Studio 2022 استفاده می‌کنید:** در `Solution Explorer`، پروژهٔ `CalculatorLibUnitTests` را انتخاب کنید، به مسیر `Project | Add Project Reference…` بروید، کادر مربوط به پروژهٔ `CalculatorLib` را تیک بزنید و سپس روی `OK` کلیک کنید.
+
+    * **اگر از Visual Studio Code استفاده می‌کنید:** از دستور `dotnet add reference` استفاده کنید، یا فایل `CalculatorLibUnitTests.csproj` را ویرایش کرده و پیکربندی را برای افزودن یک `ItemGroup` با ارجاع پروژه به `CalculatorLib` مطابق کد برجسته شده در زیر تغییر دهید:
+
+        ```xml
+        <ItemGroup>
+          <ProjectReference Include="..\CalculatorLib\CalculatorLib.csproj" />
+        </ItemGroup>
+        ```
+
