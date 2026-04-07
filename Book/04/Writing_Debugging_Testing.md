@@ -1451,7 +1451,7 @@ Trace.Close();
             ```
         8.  نتایج را مشاهده کنید، همان‌طور که در خروجی زیر نشان داده شده است:
             ```
-        Project `CalculatorLib\CalculatorLib.csproj` added to the solution.
+      Project `CalculatorLib\CalculatorLib.csproj` added to the solution.
             ```
 
 2. **تغییر نام فایل `Class1.cs`:**
@@ -1506,3 +1506,61 @@ Trace.Close();
         </ItemGroup>
         ```
 
+«مسیر مربوط به یک ارجاع پروژه می‌تواند از اسلش رو‌به‌جلو / یا بک‌اسلش \ استفاده کند، زیرا مسیرها توسط .NET  پردازش شده و در صورت نیاز برای سیستم‌عامل فعلی تغییر داده می‌شوند.
+
+۷. پروژه‌ی CalculatorLibUnitTests را بیلد کنید.»
+
+در ادامه ترجمه‌ای روان، دقیق و **کاملاً وفادار به لحن و سبک کتاب** تقدیمت می‌کنم. هیچ چیز اضافه یا کم نشده—صرفاً یک نسخهٔ فارسیِ کتابی و تکنیکی از متن اصلی:
+
+---
+
+#### نوشتن تست‌های واحد
+
+یک تست واحدِ خوب سه بخش دارد:
+
+• **Arrange (آرایش):** در این بخش، متغیرهای ورودی و خروجی اعلان و نمونه‌سازی می‌شوند.  
+• **Act (اجرا):** در این بخش، واحدی که قصد تست کردن آن را داریم اجرا می‌شود. در مثال ما، این یعنی فراخوانی متدی که می‌خواهیم تست کنیم.  
+• **Assert (تأیید):** در این بخش، یک یا چند ادعا دربارهٔ خروجی مطرح می‌شود. یک ادعا باوری است که اگر درست نباشد، نشان‌دهندهٔ شکست تست خواهد بود. برای مثال، هنگام جمع کردن ۲ و ۲ انتظار داریم نتیجه ۴ باشد.
+
+اکنون چند تست واحد برای کلاس Calculator خواهیم نوشت:
+
+1. فایل UnitTest1.cs را به CalculatorUnitTests.cs تغییر نام دهید و سپس آن را باز کنید.  
+2. در Visual Studio Code، نام کلاس را به CalculatorUnitTests تغییر دهید. (در Visual Studio هنگام تغییر نام فایل، نام کلاس نیز پیشنهاد می‌شود تغییر یابد.)  
+3. در CalculatorUnitTests، فضای نام CalculatorLib را اضافه کنید و سپس کلاس CalculatorUnitTests را طوری تغییر دهید که دو متد تست داشته باشد: یکی برای جمع ۲ و ۲ و دیگری برای جمع ۲ و ۳، مطابق کد زیر:
+
+```
+using CalculatorLib; // To use Calculator.
+
+namespace CalculatorLibUnitTests;
+
+public class CalculatorUnitTests
+{
+  [Fact]
+  public void TestAdding2And2()
+  {
+    // Arrange: Set up the inputs and the unit under test.
+    double a = 2; 
+    double b = 2;
+    double expected = 4;
+    Calculator calc = new();
+
+    // Act: Execute the function to test.
+    double actual = calc.Add(a, b);
+
+    // Assert: Make assertions to compare expected to actual results.
+    Assert.Equal(expected, actual);
+  }
+
+  [Fact]
+  public void TestAdding2And3()
+  {
+    double a = 2; 
+    double b = 3;
+    double expected = 5;
+    Calculator calc = new();
+
+    double actual = calc.Add(a, b);
+    Assert.Equal(expected, actual);
+  }
+}
+```
