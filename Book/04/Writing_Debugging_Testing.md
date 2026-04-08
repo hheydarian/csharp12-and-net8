@@ -1641,3 +1641,113 @@ static void Withdraw(string accountName, decimal amount)
 ```
 
 عملکرد خوب: اگر تابعی نتواند عملیات خود را با موفقیت انجام دهد، باید آن را یک شکست تابع در نظر بگیرید و با پرتاب یک خطا، آن را گزارش دهید.
+
+#### پرتاب خطاها با استفاده از بندهای نگهبان (Guard Clauses)
+
+به جای ایجاد یک نمونه از یک خطا با استفاده از `new`، می‌توانید از متدهای استاتیک خودِ کلاس خطا استفاده کنید. هنگامی که این متدها در پیاده‌سازی یک تابع برای بررسی مقادیر آرگومان‌ها استفاده می‌شوند، به آن‌ها «بندهای نگهبان» (Guard Clauses) گفته می‌شود. برخی از این بندها در .NET 6 معرفی شدند و در .NET 8 موارد بیشتری اضافه شد.
+
+جدول ۴.۴ بندهای نگهبان رایج را نشان می‌دهد:
+
+| خطا (Exception)             | متدهای بند نگهبان (Guard clause methods)                                                                                                                                                           |
+| :-------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ArgumentException`         | `ThrowIfNullOrEmpty`, `ThrowIfNullOrWhiteSpace`                                                                                                                                                       |
+| `ArgumentNullException`     | `ThrowIfNull`                                                                                                                                                                                       |
+| `ArgumentOutOfRangeException` | `ThrowIfEqual`, `ThrowIfGreaterThan`, `ThrowIfGreaterThanOrEqual`, `ThrowIfLessThan`, `ThrowIfLessThanOrEqual`, `ThrowIfNegative`, `ThrowIfNegativeOrZero`, `ThrowIfNotEqual`, `ThrowIfZero` |
+
+به جای نوشتن یک عبارت `if` و سپس پرتاب یک خطای جدید، می‌توانیم مثال قبلی را ساده کنیم، همانطور که در کد زیر نشان داده شده است:
+
+```csharp
+static void Withdraw(string accountName, decimal amount)
+{
+  ArgumentException.ThrowIfNullOrWhiteSpace(accountName,
+    paramName: nameof(accountName));
+  ArgumentOutOfRangeException.ThrowIfNegativeOrZero(amount,
+    paramName: nameof(amount));
+
+    // process parameters
+}
+```
+
+#### درک پشته فراخوانی (Call Stack)
+
+نقطه شروع (entry point) یک برنامه کنسولی دات‌نت ( .NET) متد Main است (اگر شما این کلاس را به طور صریح تعریف کرده باشید) یا <Main>$ (اگر توسط قابلیت برنامه سطح بالا (top-level program feature) برای شما ایجاد شده باشد) در کلاس Program.
+
+متد Main متدهای دیگری را فراخوانی می‌کند، این متدها نیز متدهای دیگری را فراخوانی می‌کنند و این روند ادامه می‌یابد. این متدها می‌توانند در پروژه فعلی شما، پروژه‌های دیگر یا بسته‌های NuGet که به آن‌ها ارجاع داده‌اید، قرار داشته باشند، همانطور که در شکل ۴.۲۴ نشان داده شده است:
+
+ <div align="center">
+
+![Conventions-UsedThis-Book](../../assets/images/04/24.png)
+</div>
+
+این مراحل یک سناریوی عالی برای نمایش نحوه عملکرد پشته فراخوانی و نحوه انتشار خطاها در آن است. بیایید این مراحل را مرور کنیم و تأثیر آن‌ها را بررسی کنیم.
+
+**ایجاد ساختار پروژه:**
+
+1. **ایجاد کتابخانه کلاس (`CallStackExceptionHandlingLib`):**
+    * این اولین گام، ایجاد یک پروژه جداگانه برای منطق پردازش خطا است. این کار به ما امکان می‌دهد تا کد را به صورت ماژولار سازماندهی کنیم و سپس آن را در برنامه اصلی خود استفاده کنیم.
+
+2. **تغییر نام فایل (`Processor.cs`):**
+    * تغییر نام فایل از `Class1.cs` به `Processor.cs` یک نام‌گذاری معنا‌دارتر و توصیفی‌تر است که هدف فایل را مشخص می‌کند.
+
+3. **محتوای `Processor.cs`:**
+    * متد `Gamma` به صورت `public` تعریف شده تا از خارج از کتابخانه قابل فراخوانی باشد.
+    * متد `Delta` به صورت `private` تعریف شده، که نشان می‌دهد این متد فقط باید در داخل کلاس `Processor` استفاده شود.
+    * مهم‌ترین بخش در اینجا، خط `File.OpenText("bad file path");` است. این خط عمداً یک مسیر فایل نامعتبر را مشخص می‌کند تا خطای `FileNotFoundException` را ایجاد کند.
+
+4. **ایجاد برنامه کنسول (`CallStackExceptionHandling`):**
+    * این برنامه کنسول نقطه شروع اجرای ما خواهد بود و از کتابخانه کلاس ایجاد شده استفاده خواهد کرد.
+
+5. **افزودن ارجاع پروژه:**
+    * این مرحله، ارتباط بین برنامه کنسول و کتابخانه کلاس را برقرار می‌کند. اکنون برنامه کنسول می‌تواند متدهای تعریف شده در `Processor.cs` را فراخوانی کند.
+
+6. **ساخت پروژه:**
+    * کامپایل کردن پروژه تضمین می‌کند که تمام وابستگی‌ها به درستی حل شده و فایل‌های لازم برای اجرا در پوشه خروجی (bin folder) کپی شده‌اند.
+
+7. **تغییرات در `Program.cs` (برنامه کنسول):**
+    * متدهای `Alpha` و `Beta` به عنوان توابع محلی (local functions) در `Program.cs` تعریف شده‌اند. این توابع نقش واسطه را ایفا می‌کنند و زنجیره فراخوانی را طولانی‌تر می‌کنند.
+    * فراخوانی‌ها به صورت زنجیره‌ای هستند: `Main` -> `Alpha` -> `Beta` -> `Processor.Gamma` -> `Processor.Delta`.
+    * `using CallStackExceptionHandlingLib;` برای دسترسی به کلاس `Processor` لازم است.
+    * `static System.Console;` به ما اجازه می‌دهد تا از متدهای `WriteLine` بدون نیاز به ذکر نام کلاس `Console` استفاده کنیم.
+
+8. **اجرای برنامه و مشاهده نتایج:**
+    * **خروجی قابل مشاهده:**
+
+        ```
+        In Main
+        In Alpha
+        In Beta
+        In Gamma
+        In Delta
+        Unhandled exception. System.IO.FileNotFoundException: Could not find file 'C:\cs12dotnet8\Chapter04\CallStackExceptionHandling\bin\Debug\net8.0\bad file path'.
+        File name: 'C:\cs12dotnet8\Chapter04\CallStackExceptionHandling\bin\Debug\net8.0\bad file path'
+           at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+           at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize)
+           at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize)
+           at System.IO.Strategies.FileStreamHelpers.ChooseStrategyCore(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize)
+           at System.IO.StreamReader.ValidateArgsAndOpenPath(String path, Encoding encoding, Int32 bufferSize)
+        Chapter 4
+        225
+           at System.IO.File.OpenText(String path)
+           at CallStackExceptionHandlingLib.Calculator.Delta() in C:\cs11dotnet8\Chapter04\CallStackExceptionHandlingLib\Processor.cs:line 16
+           at CallStackExceptionHandlingLib.Calculator.Gamma() in C:\cs12dotnet8\Chapter04\CallStackExceptionHandlingLib\Processor.cs:line 10
+           at Program.<<Main>$>g__Beta|0_1() in C:\cs12dotnet8\Chapter04\CallStackExceptionHandling\Program.cs:line 16
+           at Program.<<Main>$>g__Alpha|0_0() in C:\cs12dotnet8\Chapter04\CallStackExceptionHandling\Program.cs:line 10
+           at Program.<Main>$(String[] args) in C:\cs12dotnet8\Chapter04\CallStackExceptionHandling\Program.cs:line 5
+        ```
+
+    * **توضیح پشته فراخوانی (Call Stack):**
+        * همانطور که در خروجی مشاهده می‌کنید، پشته فراخوانی از پایین به بالا خوانده می‌شود.
+        * `Program.<Main>(String[] args)`: این نقطه شروع واقعی برنامه است.
+        * `Program.<<Main>$>g__Alpha|0_0()`: این تابع `Alpha` است که توسط کامپایلر C# نام‌گذاری مجدد شده است.
+        * `Program.<<Main>$>g__Beta|0_1()`: این تابع `Beta` است که توسط کامپایلر C# نام‌گذاری مجدد شده است.
+        * `CallStackExceptionHandlingLib.Calculator.Gamma()`: متد `Gamma` در کتابخانه کلاس فراخوانی شده است. (نکته: در خروجی شما `Calculator.Delta` و `Calculator.Gamma` ذکر شده، اما در کد شما `Processor.Delta` و `Processor.Gamma` بود. احتمالاً یک اشتباه تایپی یا ارجاع به کد قدیمی در متن شما وجود دارد، اما مفهوم یکسان است.)
+        * `CallStackExceptionHandlingLib.Calculator.Delta()`: متد `Delta` فراخوانی شده و در تلاش برای باز کردن فایل نامعتبر، خطای `FileNotFoundException` را ایجاد می‌کند.
+
+    * **انتشار خطا:**
+        * از آنجایی که هیچ کدام از متدها (نه `Delta`، نه `Gamma`، نه `Beta`، نه `Alpha` و نه `Main`) دارای بلوک `try-catch` برای گرفتن این خطا نیستند، خطا به سمت بالا در پشته فراخوانی منتشر می‌شود.
+        * این انتشار ادامه می‌یابد تا زمانی که به بالای پشته برسد. در این حالت، چون هیچ کد مدیریت خطایی وجود ندارد، چارچوب دات‌نت برنامه را متوقف کرده و اطلاعات کامل خطا و ردیابی پشته را نمایش می‌دهد.
+
+    * **نکته مهم در مورد اجرای بدون دیباگر:**
+        * همانطور که اشاره شد، اجرای برنامه بدون دیباگر (debugger) به ما این امکان را می‌دهد که رفتار واقعی برنامه را هنگام وقوع خطا ببینیم. اگر برنامه با دیباگر اجرا شود، دیباگر خطا را "می‌گیرد" و یک پنجره GUI نمایش می‌دهد که ممکن است تجربه کاربری را متفاوت کند و جزئیات کامل ردیابی پشته را به صورت متنی که در کنسول می‌بینیم، نشان ندهد.
+
+این سناریو به خوبی نشان می‌دهد که چگونه یک خطا در عمیق‌ترین بخش پشته فراخوانی می‌تواند به سمت بالا منتشر شود و چگونه می‌توان از طریق خواندن ردیابی پشته، منشأ دقیق خطا را شناسایی کرد.
