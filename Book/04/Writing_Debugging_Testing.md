@@ -1755,3 +1755,82 @@ static void Withdraw(string accountName, decimal amount)
 #### کجا استثناها را بگیریم
 
 برنامه‌نویسان می‌توانند تصمیم بگیرند که آیا می‌خواهند یک استثنا را نزدیک به نقطه شکست یا به صورت متمرکز در سطوح بالاتر پشته فراخوانی (call stack) بگیرند. این کار به کد شما اجازه می‌دهد ساده‌تر و استانداردتر شود. شما ممکن است بدانید که فراخوانی یک استثنا می‌تواند یک یا چند نوع استثنا را پرتاب کند، اما نیازی به مدیریت هیچ‌کدام از آن‌ها در نقطه فعلی پشته فراخوانی ندارید.
+
+---
+
+## **بازپراکنی استثناها (Rethrowing Exceptions)**
+
+گاهی اوقات می‌خواهید یک استثنا را دریافت (catch) کنید، آن را ثبت (log) نمایید و سپس دوباره آن را پرتاب (rethrow) کنید. به عنوان مثال، اگر در حال نوشتن یک کتابخانه کلاس سطح پایین هستید که قرار است توسط یک برنامه فراخوانی شود، کد شما ممکن است اطلاعات کافی برای رفع هوشمندانه خطا به صورت برنامه‌نویسی نداشته باشد، اما برنامه فراخواننده ممکن است اطلاعات بیشتری داشته باشد و بتواند آن را رفع کند. کد شما باید خطا را در صورتی که برنامه فراخواننده این کار را انجام نمی‌دهد، ثبت کند و سپس آن را به سمت بالا در پشته فراخوانی (call stack) پرتاب کند تا برنامه فراخواننده بتواند آن را بهتر مدیریت کند.
+
+سه روش برای بازپراکنی یک استثنا در داخل یک بلوک `catch` وجود دارد، همانطور که در لیست زیر نشان داده شده است:
+
+* برای پرتاب استثنای گرفته شده با پشته فراخوانی اصلی آن، دستور `throw;` را فراخوانی کنید.
+* برای پرتاب استثنای گرفته شده به گونه‌ای که گویی در سطح فعلی پشته فراخوانی پرتاب شده است، دستور `throw ex;` (که `ex` استثنای گرفته شده است) را فراخوانی کنید. این معمولاً یک رویه ضعیف است زیرا شما برخی اطلاعات بالقوه مفید برای اشکال‌زدایی را از دست داده‌اید، اما زمانی می‌تواند مفید باشد که بخواهید عمداً آن اطلاعات را حذف کنید، به خصوص اگر حاوی داده‌های حساس باشد.
+* برای پیچیدن استثنای گرفته شده در یک استثنای دیگر که می‌تواند اطلاعات بیشتری را در پیامی بگنجاند که به فراخواننده در درک مشکل کمک کند، یک استثنای جدید پرتاب کنید و استثنای گرفته شده را به عنوان پارامتر `innerException` ارسال کنید.
+
+اگر خطایی هنگام فراخوانی تابع `Gamma` رخ دهد، ما می‌توانیم استثنا را دریافت کرده و یکی از سه تکنیک بازپراکنی استثنا را انجام دهیم، همانطور که در کد زیر نشان داده شده است:
+
+**این کد فقط نمایشی است. شما هرگز از هر سه تکنیک در یک بلوک catch استفاده نخواهید کرد!**
+
+---
+
+```csharp
+try
+{
+  Gamma();
+}
+catch (IOException ex)
+{
+  LogException(ex);
+  // Throw the caught exception as if it happened here
+  // this will lose the original call stack.
+  throw ex;
+  // Rethrow the caught exception and retain its original call stack.
+  throw;
+  // Throw a new exception with the caught exception nested within it.
+  throw new InvalidOperationException(
+    message: "Calculation had invalid values. See inner exception for why.",
+    innerException: ex);
+}
+```
+
+این کد را در عمل با مثال پشته فراخوانی خودمان مشاهده کنیم:
+۱. در پروژه CallStackExceptionHandling، در فایل Program.cs، تابع Beta، یک دستور try-catch اطراف فراخوانی تابع Gamma اضافه کنید، همانطور که در کد زیر برجسته شده است:
+
+```csharp
+void Beta()
+{
+  WriteLine("In Beta");
+  try
+  {
+    Processor.Gamma();
+  }
+  catch (Exception ex)
+  {
+    WriteLine($"Caught this: {ex.Message}");
+    throw ex;
+  }
+}
+```
+
+دقت کنید که ویرایشگر کد شما زیر `throw ex` یک خط موج‌دار نشان می‌دهد تا به شما هشدار دهد که اطلاعات پشته فراخوانی (call stack) را از دست خواهید داد. این موضوع در پیام تحلیلگر کد زیر توضیح داده شده است: «بازپرتاب استثنای گرفته شده اطلاعات پشته را تغییر می‌دهد» (Re-throwing caught exception changes stack information)، با جزئیات بیشتر که در لینک زیر یافت می‌شود: <https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2200>.
+
+۲. برنامه کنسول را اجرا کنید و توجه داشته باشید که خروجی، برخی از جزئیات پشته فراخوانی را حذف کرده است، همانطور که در خروجی زیر نشان داده شده است:
+
+```
+Caught this: Could not find file 'C:\cs12dotnet8\Chapter04\CallStackExceptionHandling\bin\Debug\net8.0\bad file path'.
+Unhandled exception. System.IO.FileNotFoundException: Could not find file 'C:\cs12dotnet8\Chapter04\CallStackExceptionHandling\bin\Debug\net8.0\bad file path'.
+File name: 'C:\cs12dotnet8\Chapter04\CallStackExceptionExceptionHandling\bin\Debug\net8.0\bad file path'
+   at Program.<<Main>$>g__Beta|0_1() in C:\cs12dotnet8\Chapter04\CallStackExceptionHandling\Program.cs:line 23
+   at Program.<<Main>$>g__Alpha|0_0() in C:\cs12dotnet8\Chapter04\CallStackExceptionHandling\Program.cs:line 10
+   at Program.<Main>$(String[] args) in C:\cs12dotnet8\Chapter04\CallStackExceptionHandling\Program.cs:line 5
+```
+
+توجه: ویرایشگر کد شما زیر `throw ex` یک خط موج‌دار نشان می‌دهد تا به شما هشدار دهد که اطلاعات پشته فراخوانی (call stack) را از دست خواهید داد. این موضوع در پیام تحلیلگر کد زیر توضیح داده شده است: «بازپرتاب استثنای گرفته شده اطلاعات پشته را تغییر می‌دهد» (Re-throwing caught exception changes stack information)، با جزئیات بیشتر که در لینک زیر یافت می‌شود: <https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2200>.
+
+۲۲۸
+نوشتن، اشکال‌زدایی و آزمایش توابع
+
+۳. `ex` را با جایگزین کردن دستور `throw ex;` با `throw;` حذف کنید.
+
+۴. برنامه کنسول را اجرا کنید و توجه داشته باشید که خروجی، تمام جزئیات پشته فراخوانی را شامل می‌شود.
