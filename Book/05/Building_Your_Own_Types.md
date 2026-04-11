@@ -165,3 +165,84 @@ public class Person
   * **ویژگی (Property):** دستورالعمل‌ها هنگام دریافت یا تنظیم داده‌ها اجرا می‌شوند. داده‌ها معمولاً در یک فیلد ذخیره می‌شوند، اما می‌توانند به‌صورت خارجی ذخیره شوند یا در زمان اجرا محاسبه شوند. ویژگی‌ها روش ارجح برای کپسوله‌سازی فیلدها هستند، مگر اینکه نیاز باشد آدرس حافظه فیلد در معرض دید قرار گیرد. به عنوان مثال، `Console.ForegroundColor` برای تنظیم رنگ فعلی متن در یک برنامه کنسولی.
   * **ایندکسر (Indexer):** دستورالعمل‌ها هنگام دریافت یا تنظیم داده‌ها با استفاده از سینتکس "آرایه" `[]` اجرا می‌شوند. به عنوان مثال، از `name[0]` برای دریافت اولین کاراکتر در متغیر `name` که یک رشته است، استفاده کنید.
   * **عملگر (Operator):** دستورالعمل‌ها هنگام اعمال یک عملگر مانند `+` و `/` به عملوندها (operands) از نوع شما اجرا می‌شوند. به عنوان مثال، از `a + b` برای جمع کردن دو متغیر استفاده کنید.
+
+### وارد کردن یک فضای نام برای استفاده از یک نوع (Type)
+
+در این بخش، نمونه‌ای از کلاس `Person` را ایجاد خواهیم کرد.
+
+قبل از اینکه بتوانیم کلاسی را نمونه‌سازی (instantiate) کنیم، باید ارجاع (reference) به اسمبلی (assembly) که آن را در بر دارد، از یک پروژه دیگر اضافه کنیم. ما از این کلاس در یک برنامه کنسولی استفاده خواهیم کرد:
+
+**مراحل:**
+
+1. **ایجاد پروژه برنامه کنسولی:**
+    * با استفاده از ابزار کدنویسی دلخواه خود، یک برنامه کنسولی جدید با نام `PeopleApp` به راه‌حل (solution) `Chapter05` اضافه کنید. اطمینان حاصل کنید که پروژه جدید را به راه‌حل موجود اضافه می‌کنید، زیرا قرار است از برنامه کنسولی به پروژه کتابخانه کلاس موجود ارجاع دهید، بنابراین هر دو پروژه باید در یک راه‌حل باشند.
+
+2. **اگر از Visual Studio 2022 استفاده می‌کنید:**
+    * پروژه راه‌انداز (startup project) برای راه‌حل را روی انتخاب فعلی پیکربندی کنید.
+    * در Solution Explorer، پروژه `PeopleApp` را انتخاب کنید، به مسیر `Project | Add Project Reference…` بروید، کادر کنار پروژه `PacktLibraryNetStandard2` را علامت بزنید و سپس روی OK کلیک کنید.
+    * در فایل `PeopleApp.csproj`، ورودی زیر را برای وارد کردن ایستا (statically import) کلاس `System.Console` اضافه کنید:
+
+        ```xml
+        <ItemGroup>
+          <Using Include="System.Console" Static="true" />
+        </ItemGroup>
+        ```
+
+    * به مسیر `Build | Build PeopleApp` بروید.
+
+3. **اگر از Visual Studio Code استفاده می‌کنید:**
+    * فایل `PeopleApp.csproj` را ویرایش کنید تا ارجاع پروژه به `PacktLibraryNetStandard2` اضافه شود و ورودی زیر برای وارد کردن ایستا (statically import) کلاس `System.Console` را اضافه کنید:
+
+        ```xml
+        <Project Sdk="Microsoft.NET.Sdk">
+          <PropertyGroup>
+            <OutputType>Exe</OutputType>
+            <TargetFramework>net8.0</TargetFramework>
+            <Nullable>enable</Nullable>
+            <ImplicitUsings>enable</ImplicitUsings>
+          </PropertyGroup>
+          <ItemGroup>
+            <ProjectReference Include="../PacktLibraryNetStandard2/PacktLibraryNetStandard2.csproj" />
+          </ItemGroup>
+          <ItemGroup>
+            <Using Include="System.Console" Static="true" />
+          </ItemGroup>
+        </Project>
+        ```
+
+    * در ترمینال، پروژه `PeopleApp` و وابستگی (dependency) آن، پروژه `PacktLibraryNetStandard2` را کامپایل کنید:
+
+        ```bash
+        dotnet build
+        ```
+
+4. **ایجاد فایل کمکی:**
+    * در پروژه `PeopleApp`، یک فایل کلاس جدید با نام `Program.Helpers.cs` اضافه کنید.
+
+5. **تعریف متد `ConfigureConsole`:**
+    * در فایل `Program.Helpers.cs`، هرگونه دستورالعمل موجود را حذف کنید و یک کلاس جزئی (partial class) `Program` با متدی برای پیکربندی کنسول تعریف کنید تا نمادهای ویژه (مانند نماد ارز یورو) را فعال کند و فرهنگ (culture) فعلی را کنترل کند:
+
+    ```csharp
+    using System.Globalization; // برای استفاده از CultureInfo
+
+    partial class Program
+    {
+        private static void ConfigureConsole(
+            string culture = "en-US",
+            bool useComputerCulture = false,
+            bool showCulture = true)
+        {
+            OutputEncoding = System.Text.Encoding.UTF8;
+            if (!useComputerCulture)
+            {
+                CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo(culture);
+            }
+            if (showCulture)
+            {
+                WriteLine($"Current culture: {CultureInfo.CurrentCulture.DisplayName}.");
+            }
+        }
+    }
+    ```
+
+با پایان این فصل، درک خواهید کرد که متد بالا چگونه از ویژگی‌های سی‌شارپ مانند کلاس‌های جزئی، پارامترهای اختیاری و غیره استفاده می‌کند. اگر مایلید درباره کار با زبان‌ها و فرهنگ‌ها، و همچنین تاریخ‌ها، زمان‌ها و مناطق زمانی بیشتر بدانید، فصلی درباره جهانی‌شدن (globalization) و بومی‌سازی (localization) در کتاب همراه من، «Apps and Services with .NET 8»، وجود دارد.
