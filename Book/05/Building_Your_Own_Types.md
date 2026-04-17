@@ -473,3 +473,95 @@ Bob Smith was born on Wednesday, December 22, 1965.
 ```
 Bob Smith est né le mercredi 22 décembre 1965.
 ```
+
+**تنظیم مقدار فیلدها با استفاده از سینتکس مقداردهی اولیهٔ شیء (Object Initializer Syntax)**
+
+شما می‌توانید فیلدها را با استفاده از سینتکس خلاصه‌تری به نام **Object Initializer** که از نسخه‌ی C# 3 معرفی شد، مقداردهی کنید. بیایید ببینیم چطور:
+
+---
+
+1. زیرِ کدهای موجود، دستورات لازم را اضافه کنید تا یک شخص جدید به نام **Alice** ایجاد شود. توجه کنید که در زمان چاپ تاریخ تولد او، از **کد قالب استاندارد متفاوتی** برای تاریخ استفاده شده است. نمونهٔ کد زیر را ببینید:
+
+```csharp
+Person alice = new()
+{
+  Name = "Alice Jones",
+  Born = new(1998, 3, 7, 16, 28, 0,
+    // این یک اختلاف اختیاری از منطقهٔ زمانی UTC است.
+    TimeSpan.Zero)
+};
+
+WriteLine(format: "{0} was born on {1:d}.", // تاریخ کوتاه (short date)
+  arg0: alice.Name, arg1: alice.Born);
+```
+
+ما می‌توانستیم از **interpolation رشته‌ای** برای قالب‌بندی خروجی استفاده کنیم،  
+اما در رشته‌های طولانی، این کار باعث چندخطی شدن کد می‌شود و در یک کتاب چاپ‌شده خوانایی را کاهش می‌دهد.  
+
+در مثال‌های این کتاب به خاطر داشته باشید که `{0}` جایگزین `arg0` است و به همین ترتیب `{1}` برای `arg1` و … .
+
+---
+
+1. پروژهٔ **PeopleApp** را اجرا کنید و خروجی مشابه زیر خواهید دید:
+
+```
+Alice Jones was born on 3/7/1998.
+```
+
+---
+
+**روش درست (Good Practice):**  
+برای خوانایی بیشتر، از **پارامترهای نام‌گذاری‌شده (named parameters)** هنگام ارسال آرگومان‌ها استفاده کنید، خصوصاً برای نوع‌هایی مثل `DateTimeOffset` که چندین عدد پشت سر هم دارند و تشخیص معنی هر کدام سخت‌تر می‌شود.
+
+#### ذخیره‌سازی مقدار با استفاده از نوع enum  
+
+گاهی لازم است یک مقدار فقط یکی از چند گزینهٔ محدود باشد. برای مثال، هفت شگفتی دنیای باستان وجود دارد و هر شخص ممکن است یکی را به‌عنوان مورد علاقه داشته باشد.  
+در مواقع دیگر، یک مقدار باید ترکیبی از مجموعهٔ محدودی از گزینه‌ها باشد. برای مثال، یک شخص ممکن است فهرست آرزوهایی از شگفتی‌های دنیای باستان داشته باشد که می‌خواهد از آن‌ها بازدید کند. ما می‌توانیم این داده را با تعریف یک نوع enum ذخیره کنیم.  
+
+یک نوع enum روشی بسیار کارآمد برای ذخیره‌سازی یک یا چند انتخاب است، زیرا درونی‌سازی آن با استفاده از مقادیر عدد صحیح همراه با یک جدول نگاشت رشته‌ای انجام می‌شود. بیایید یک مثال ببینیم:
+
+1. یک فایل جدید به پروژهٔ **PacktLibraryNetStandard2** با نام **WondersOfTheAncientWorld.cs** اضافه کنید.
+
+2. محتوای فایل **WondersOfTheAncientWorld.cs** را مطابق کد زیر تغییر دهید:
+
+```csharp
+namespace Packt.Shared;
+public enum WondersOfTheAncientWorld
+{
+  GreatPyramidOfGiza,
+  HangingGardensOfBabylon,
+  StatueOfZeusAtOlympia,
+  TempleOfArtemisAtEphesus,
+  MausoleumAtHalicarnassus,
+  ColossusOfRhodes,
+  LighthouseOfAlexandria
+}
+```
+
+1. در فایل **Person.cs** یک فیلد برای ذخیرهٔ شگفتی مورد علاقهٔ یک شخص تعریف کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+public WondersOfTheAncientWorld FavoriteAncientWonder;
+```
+
+1. در فایل **Program.cs** شگفتی مورد علاقهٔ Bob را تنظیم کرده و آن را چاپ کنید، همان‌طور که در کد زیر آمده است:
+
+```csharp
+bob.FavoriteAncientWonder = WondersOfTheAncientWorld.
+  StatueOfZeusAtOlympia;
+
+WriteLine(
+  format: "{0}'s favorite wonder is {1}. Its integer is {2}.",
+  arg0: bob.Name,
+  arg1: bob.FavoriteAncientWonder,
+  arg2: (int)bob.FavoriteAncientWonder);
+```
+
+1. پروژهٔ **PeopleApp** را اجرا کنید و خروجی را ببینید، مانند زیر:
+
+```
+Bob Smith's favorite wonder is StatueOfZeusAtOlympia. Its integer is 2.
+```
+
+مقدار enum درونی‌سازی شده به‌صورت یک عدد صحیح ذخیره می‌شود. مقادیر int از ۰ شروع و به‌صورت خودکار تخصیص داده می‌شوند، بنابراین سومین شگفتی دنیای باستان در enum ما مقدار ۲ خواهد داشت.  
+شما می‌توانید مقدار int ای تنظیم کنید که در enum تعریف نشده باشد. چنین مقداری به‌صورت عدد صحیح نمایش داده می‌شود، زیرا نامی مطابق با آن یافت نخواهد شد.
