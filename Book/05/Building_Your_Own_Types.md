@@ -684,3 +684,56 @@ Bob Smith has 3 children:
 ```
 
 ما همچنین می‌توانیم از دستور `foreach` برای پیمایش مجموعه استفاده کنیم. به عنوان یک چالش اختیاری، دستور `for` را برای نمایش همین اطلاعات با استفاده از `foreach` تغییر دهید.
+
+---
+
+## ساخت یک فیلد static
+
+فیلدهایی که تا الآن ایجاد کرده‌ایم همگی عضوهای instance بوده‌اند، به این معنی که برای هر نمونه‌ای که از کلاس ایجاد می‌شود یک مقدار متفاوت از هر فیلد وجود دارد. متغیرهای alice و bob مقادیر Name متفاوتی دارند.
+
+گاهی می‌خواهید فیلدی تعریف کنید که فقط یک مقدار داشته باشد که بین همهٔ نمونه‌ها مشترک است. این‌ها static members نامیده می‌شوند زیرا فیلدها تنها عضوهایی نیستند که می‌توانند static باشند. بیایید ببینیم با استفاده از static fields چه چیزی می‌توان به دست آورد، با استفاده از یک حساب بانکی به عنوان مثال. هر نمونهٔ BankAccount مقادیر مخصوص به خود را برای AccountName و Balance خواهد داشت، اما همهٔ نمونه‌ها یک مقدار مشترک InterestRate خواهند داشت.
+
+بیایید انجام دهیم:
+
+1. در پروژهٔ PacktLibraryNetStandard2، یک فایل کلاس جدید با نام BankAccount.cs اضافه کنید.
+
+2. کلاس را طوری تغییر دهید که سه فیلد داشته باشد – دو فیلد instance و یک فیلد static – همان‌طور که در کد زیر آمده است:
+
+```csharp
+namespace Packt.Shared;
+public class BankAccount
+{
+  public string? AccountName; // Instance member. It could be null.
+  public decimal Balance; // Instance member. Defaults to zero.
+  public static decimal InterestRate; // Shared member. Defaults to zero.
+}
+```
+
+1. در Program.cs، دستوراتی اضافه کنید تا نرخ بهرهٔ مشترک تنظیم شود، و سپس دو نمونه از نوع BankAccount ایجاد کنید، همان‌طور که در کد زیر آمده است:
+
+```csharp
+BankAccount.InterestRate = 0.012M; // Store a shared value in static 
+field.
+BankAccount jonesAccount = new();
+jonesAccount.AccountName = "Mrs. Jones"; 
+jonesAccount.Balance = 2400;
+WriteLine(format: "{0} earned {1:C} interest.",
+  arg0: jonesAccount.AccountName,
+  arg1: jonesAccount.Balance * BankAccount.InterestRate);
+BankAccount gerrierAccount = new(); 
+gerrierAccount.AccountName = "Ms. Gerrier"; 
+gerrierAccount.Balance = 98;
+WriteLine(format: "{0} earned {1:C} interest.",
+  arg0: gerrierAccount.AccountName,
+  arg1: gerrierAccount.Balance * BankAccount.InterestRate);
+```
+
+1. پروژهٔ PeopleApp را اجرا کنید و خروجی اضافه‌شده را مشاهده کنید:
+
+```
+Mrs. Jones earned $28.80 interest.
+Ms. Gerrier earned $1.18 interest.
+```
+
+به یاد داشته باشید که C یک کد قالب‌بندی است که به .NET می‌گوید از قالب‌بندی ارز مربوط به فرهنگ فعلی برای اعداد اعشاری استفاده کند.
+
