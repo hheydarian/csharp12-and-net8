@@ -805,3 +805,107 @@ Bob Smith was born on Earth.
 از فیلدهای read-only به‌جای فیلدهای ثابت استفاده کنید به دو دلیل مهم: مقدار می‌تواند در زمان اجرا محاسبه یا بارگذاری شود و می‌تواند با هر دستور اجرایی بیان شود. بنابراین، یک فیلد read-only می‌تواند با استفاده از سازنده یا انتساب فیلد تنظیم شود. هر ارجاع به فیلد read-only یک ارجاع زنده است، بنابراین هر تغییر آینده به‌درستی توسط کد فراخوان بازتاب داده خواهد شد.
 
 شما همچنین می‌توانید فیلدهای static readonly اعلام کنید که مقادیر آن‌ها بین تمام نمونه‌های نوع مشترک خواهند بود.
+
+---
+
+## الزام به مقداردهی فیلدها هنگام نمونه‌سازی
+
+زبان C# 11 اصلاح‌کننده‌ای به نام `required` معرفی کرده است. اگر از آن در یک فیلد یا ویژگی استفاده کنید، کامپایلر اطمینان حاصل می‌کند که هنگام نمونه‌سازی، آن فیلد یا ویژگی به مقداری تنظیم شده باشد. این قابلیت نیازمند هدف‌گیری نسخهٔ .NET 7 یا بالاتر است، بنابراین ابتدا باید یک کلاس‌لیبری جدید ایجاد کنیم:
+
+1. در راه‌حل Chapter05، یک پروژهٔ کلاس‌لیبری جدید با نام `PacktLibraryModern` اضافه کنید که .NET 8 را هدف قرار دهد. (قدیمی‌ترین نسخهٔ پشتیبانی‌شده برای اصلاح‌کنندهٔ `required`، نسخهٔ .NET 7 است.)
+
+2. در پروژهٔ `PacktLibraryModern`، فایل `Class1.cs` را به `Book.cs` تغییر نام دهید.
+
+3. محتوای فایل کد را طوری تغییر دهید که کلاس شامل چهار فیلد باشد، و دو فیلد از آن‌ها به‌صورت `required` تنظیم شوند، همان‌طور که در کد زیر مشاهده می‌شود:
+
+```csharp
+namespace Packt.Shared;
+public class Book
+{
+  // Needs .NET 7 or later as well as C# 11 or later.
+  public required string? Isbn;
+  public required string? Title;
+  // Works with any version of .NET.
+  public string? Author;
+  public int PageCount;
+}
+```
+
+توجه داشته باشید که هر سه ویژگی رشته‌ای nullable هستند. تنظیم یک ویژگی یا فیلد به‌صورت `required` به این معنا نیست که نمی‌تواند مقدار null داشته باشد؛ بلکه به این معناست که باید **صریحاً مقداردهی شود**، حتی اگر آن مقدار، `null` باشد.
+
+---
+
+## الزام به مقداردهی اعضای موردنیاز هنگام نمونه‌سازی (ادامه)
+
+1. در پروژهٔ کنسول `PeopleApp`، یک **ارجاع (Reference)** به کلاس‌لیبری `PacktLibraryModern` اضافه کنید:
+
+* اگر از **Visual Studio 2022** استفاده می‌کنید، در **Solution Explorer** پروژهٔ `PeopleApp` را انتخاب کنید، مسیر زیر را دنبال کنید:  
+  `Project | Add Project Reference…`  
+  سپس تیک مربوط به پروژهٔ `PacktLibraryModern` را فعال کرده و روی **OK** کلیک کنید.
+
+* اگر از **Visual Studio Code** استفاده می‌کنید، فایل `PeopleApp.csproj` را ویرایش کنید تا یک ارجاع به پروژهٔ `PacktLibraryModern` اضافه شود، همان‌طور که در نشانه‌گذاری زیر مشخص است:
+
+```xml
+<ItemGroup>
+  <ProjectReference Include=
+    "..\PacktLibraryNetStandard2\PacktLibraryNetStandard2.csproj" />
+  <ProjectReference Include=
+    "..\PacktLibraryModern\PacktLibraryModern.csproj" />
+</ItemGroup>
+```
+
+---
+
+1. پروژهٔ `PeopleApp` را **بیلد (Build)** کنید تا وابستگی‌های ارجاع‌شده کامپایل شوند و فایل کلاس‌لیبری `.dll` در پوشهٔ محلی `bin` کپی گردد.
+
+---
+
+1. در پروژهٔ `PeopleApp`، در فایل `Program.cs`، تلاش کنید که یک شیء از نوع `Book` **بدون تنظیم فیلدهای Isbn و Title** ایجاد کنید، همان‌طور که در کد زیر آمده است:
+
+```csharp
+Book book = new();
+```
+
+---
+
+1. توجه کنید که خطای کامپایلر ظاهر خواهد شد، همان‌طور که در خروجی زیر دیده می‌شود:
+
+```
+C:\cs12dotnet8\Chapter05\PeopleApp\Program.cs(137,13): error CS9035:
+Required member 'Book.Isbn' must be set in the object initializer or
+attribute constructor. [C:\cs12dotnet8\Chapter05\PeopleApp\PeopleApp.csproj]
+C:\cs12dotnet8\Chapter05\PeopleApp\Program.cs(137,13): error CS9035:
+Required member 'Book.Title' must be set in the object initializer or
+attribute constructor. [C:\cs12dotnet8\Chapter05\PeopleApp\PeopleApp.csproj]
+    0 Warning(s)
+    2 Error(s)
+```
+
+---
+
+1. در فایل `Program.cs`، دستور ایجاد شیء را تغییر دهید تا دو ویژگی الزامی با استفاده از **سینتکس مقداردهی شیء (object initialization syntax)** تنظیم شوند، همان‌طور که در کد زیر مشخص است:
+
+```csharp
+Book book = new()
+{
+  Isbn = "978-1803237800",
+  Title = "C# 12 and .NET 8 - Modern Cross-Platform Development Fundamentals"
+};
+```
+
+---
+
+1. توجه کنید که حالا این دستور بدون هیچ خطایی کامپایل می‌شود.
+
+---
+
+1. در فایل `Program.cs`، یک دستور اضافه کنید تا اطلاعات مربوط به کتاب را چاپ کند، همان‌طور که در کد زیر آمده است:
+
+```csharp
+WriteLine("{0}: {1} written by {2} has {3:N0} pages.",
+  book.Isbn, book.Title, book.Author, book.PageCount);
+```
+
+---
+
+پیش از آنکه پروژه را اجرا کرده و خروجی را مشاهده کنیم، بیایید دربارهٔ **روش جایگزینی برای مقداردهی اولیهٔ فیلدها (یا ویژگی‌ها)** صحبت کنیم.
