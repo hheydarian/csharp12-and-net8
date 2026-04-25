@@ -980,3 +980,81 @@ WriteLine(format: "{0} of {1} was created at {2:hh:mm:ss} on a {2:dddd}.",
 ```
 Gunny of Mars was created at 11:59:25 on a Sunday
 ```
+
+#### تنظیم فیلدهای ضروری با استفاده از سازنده
+
+حال بیایید به مثال کلاس `Book` با فیلدهای ضروری آن بازگردیم:
+
+۱. در پروژه `PacktLibraryModern`، در فایل `Book.cs`، دستوراتی را اضافه کنید تا یک جفت سازنده تعریف کنید: یکی که از نحو مقداردهی شیء (object initializer syntax) پشتیبانی می‌کند و دیگری که دو ویژگی ضروری را تنظیم می‌کند، همان‌طور که در کد زیر مشخص شده است:
+
+```csharp
+Chapter 5 257
+public class Book
+{
+    // سازنده برای استفاده با نحو مقداردهی شیء.
+    public Book()
+    {
+    }
+
+    // سازنده با پارامترها برای تنظیم فیلدهای ضروری.
+    public Book(string? isbn, string? title)
+    {
+        Isbn = isbn;
+        Title = title;
+    }
+}
+```
+
+۲. در فایل `Program.cs`، دستور Instantiate کردن کتاب با استفاده از نحو مقداردهی شیء را کامنت کنید، یک دستور برای Instantiate کردن کتاب با استفاده از سازنده اضافه کنید و سپس ویژگی‌های غیرضروری کتاب را تنظیم کنید، همان‌طور که در کد زیر مشخص شده است:
+
+```csharp
+/* // Instantiate a book using object initializer syntax.
+Book book = new() { Isbn = "978-1803237800", Title = "C# 12 and .NET 8 - Modern Cross-Platform Development Fundamentals" }; */
+
+Book book = new(isbn: "978-1803237800", title: "C# 12 and .NET 8 - Modern Cross-Platform Development Fundamentals")
+{
+    Author = "Mark J. Price",
+    PageCount = 821
+};
+```
+
+۳. توجه داشته باشید که همانند قبل، یک خطای کامپایلر مشاهده خواهید کرد، زیرا کامپایلر نمی‌تواند به طور خودکار تشخیص دهد که فراخوانی سازنده باعث تنظیم دو ویژگی ضروری شده است.
+
+۴. در پروژه `PacktLibraryModern`، در فایل `Book.cs`، فضای نام را برای انجام تحلیل کد وارد کنید و سپس سازنده را با ویژگی (Attribute) تزئین کنید تا به کامپایلر بگوید که تمام ویژگی‌ها و فیلدهای ضروری را تنظیم می‌کند، همان‌طور که در کد زیر مشخص شده است:
+
+```csharp
+using System.Diagnostics.CodeAnalysis; // To use [SetsRequiredMembers].
+
+namespace Packt.Shared;
+
+// Building Your Own Types with Object-Oriented Programming 258
+public class Book
+{
+    public Book() { } // For use with initialization syntax.
+
+    [SetsRequiredMembers]
+    public Book(string isbn, string title)
+    {
+        Isbn = isbn;
+        Title = title;
+    }
+}
+```
+
+۵. در فایل `Program.cs`، توجه کنید که دستور فراخوانی سازنده اکنون بدون خطا کامپایل می‌شود.
+
+۶. اختیاری است، پروژه `PeopleApp` را اجرا کنید تا تأیید کنید که رفتار آن مطابق انتظار است، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```
+978-1803237800: C# 12 and .NET 8 - Modern Cross-Platform Development Fundamentals written by Mark J. Price has 821 pages.
+```
+
+**اطلاعات بیشتر:**
+می‌توانید اطلاعات بیشتری درباره فیلدهای ضروری (Required Fields) و نحوه تنظیم آن‌ها با استفاده از سازنده در لینک زیر کسب کنید:
+<https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/required>
+
+سازنده‌ها دسته‌ای ویژه از متدها هستند. بیایید متدها را با جزئیات بیشتری بررسی کنیم.
+
+#### کار با متدها و تاپل‌ها
+
+متدها اعضای یک نوع هستند که بلوکی از دستورات را اجرا می‌کنند. آن‌ها توابعی هستند که متعلق به یک نوع می‌باشند.
