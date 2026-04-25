@@ -909,3 +909,74 @@ WriteLine("{0}: {1} written by {2} has {3:N0} pages.",
 ---
 
 پیش از آنکه پروژه را اجرا کرده و خروجی را مشاهده کنیم، بیایید دربارهٔ **روش جایگزینی برای مقداردهی اولیهٔ فیلدها (یا ویژگی‌ها)** صحبت کنیم.
+
+#### مقداردهی فیلدها با سازنده‌ها (Constructors)
+
+اغلب اوقات نیاز است که فیلدها در زمان اجرا (Runtime) مقداردهی اولیه شوند. این کار را می‌توانید در یک سازنده انجام دهید که هنگام ایجاد نمونه‌ای از یک کلاس با استفاده از کلمه کلیدی `new` فراخوانی می‌شود. سازنده‌ها قبل از اینکه هرگونه فیلدی توسط کدی که از نوع استفاده می‌کند، تنظیم شوند، اجرا می‌گردند:
+
+۱. در فایل `Person.cs`، دستوراتی را پس از فیلد موجود `HomePlanet` که readonly است اضافه کنید تا یک فیلد readonly دوم را تعریف کنید، و سپس فیلدهای `Name` و `Instantiated` را در یک سازنده مقداردهی کنید، همان‌طور که در کد زیر مشخص شده است:
+
+```csharp
+// فیلدهای readonly: مقادیری که می‌توانند در زمان اجرا تنظیم شوند.
+public readonly string HomePlanet = "Earth";
+public readonly DateTime Instantiated;
+#endregion
+
+#region سازنده‌ها: زمانی که از new برای ایجاد نمونه از یک نوع استفاده می‌شود، فراخوانی می‌شوند.
+public Person()
+{
+    // سازنده‌ها می‌توانند مقادیر پیش‌فرض را برای فیلدها از جمله
+    // هر فیلد readonly مانند Instantiated تنظیم کنند.
+    Name = "Unknown";
+    Instantiated = DateTime.Now;
+}
+#endregion
+```
+
+۲. در فایل `Program.cs`، دستوراتی را اضافه کنید تا یک شخص جدید را ایجاد کنید و سپس مقادیر اولیه فیلدهای آن را خروجی بگیرید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+Person blankPerson = new();
+WriteLine(format: "{0} of {1} was created at {2:hh:mm:ss} on a {2:dddd}.",
+    arg0: blankPerson.Name,
+    arg1: blankPerson.HomePlanet,
+    arg2: blankPerson.Instantiated);
+```
+
+۳. پروژه `PeopleApp` را اجرا کنید و نتیجه را هم از کد مربوط به کتاب و هم از شخص خالی (blank person) مشاهده کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```
+978-1803237800: C# 12 and .NET 8 - Modern Cross-Platform Development Fundamentals written by has 0 pages.
+Unknown of Earth was created at 11:58:12 on a Sunday
+```
+
+#### تعریف چندین سازنده
+
+شما می‌توانید چندین سازنده در یک نوع (Type) داشته باشید. این موضوع به ویژه برای تشویق توسعه‌دهندگان به تنظیم مقادیر اولیه برای فیلدها مفید است:
+
+۱. در فایل `Person.cs`، دستوراتی را اضافه کنید تا یک سازنده دوم را تعریف کنید که به توسعه‌دهنده اجازه می‌دهد مقادیر اولیه برای نام شخص و سیاره مبدأ او را تنظیم کند، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+public Person(string initialName, string homePlanet)
+{
+    Name = initialName;
+    HomePlanet = homePlanet;
+    Instantiated = DateTime.Now;
+}
+```
+
+۲. در فایل `Program.cs`، دستوراتی را اضافه کنید تا یک شخص دیگر را با استفاده از سازنده‌ای که دو پارامتر دارد ایجاد کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+Person gunny = new(initialName: "Gunny", homePlanet: "Mars");
+WriteLine(format: "{0} of {1} was created at {2:hh:mm:ss} on a {2:dddd}.",
+    arg0: gunny.Name,
+    arg1: gunny.HomePlanet,
+    arg2: gunny.Instantiated);
+```
+
+۳. پروژه `PeopleApp` را اجرا کنید و نتیجه را مشاهده کنید:
+
+```
+Gunny of Mars was created at 11:59:25 on a Sunday
+```
