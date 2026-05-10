@@ -1521,3 +1521,43 @@ WriteLine($"Deconstructed tuple: {fruitName}, {fruitNumber}");
 Deconstructed tuple: Apples, 5
 ```
 
+#### تخلیه انواع دیگر با استفاده از تاپل‌ها
+
+تاپل‌ها تنها نوعی نیستند که بتوان آن‌ها را تخلیه کرد. هر نوعی می‌تواند دارای روش‌های خاصی به نام `Deconstruct` باشد که یک شیء را به اجزای آن تجزیه می‌کنند. شما می‌توانید به تعداد دلخواه متد `Deconstruct` داشته باشید، به شرطی که امضاهای (Signatures) متفاوتی داشته باشند. بیایید برخی را برای کلاس `Person` پیاده‌سازی کنیم:
+
+۱. در فایل `Person.cs`، دو متد `Deconstruct` با پارامترهای `out` که برای بخش‌هایی که می‌خواهیم تخلیه شوند تعریف شده‌اند، اضافه کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+// سازنده‌های تخلیه: این شیء را به اجزای آن تجزیه می‌کنند.
+public void Deconstruct(out string? name, out DateTimeOffset dob)
+{
+    name = Name;
+    dob = Born;
+}
+
+public void Deconstruct(out string? name, out DateTimeOffset dob, out WondersOfTheAncientWorld fav)
+{
+    name = Name;
+    dob = Born;
+    fav = FavoriteAncientWonder;
+}
+```
+
+۲. در فایل `Program.cs`، دستوراتی را اضافه کنید تا `bob` را تخلیه کنید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+var (name1, dob1) = bob; // به طور ضمنی متد Deconstruct را فراخوانی می‌کند.
+WriteLine($"Deconstructed person: {name1}, {dob1}");
+
+var (name2, dob2, fav2) = bob;
+WriteLine($"Deconstructed person: {name2}, {dob2}, {fav2}");
+```
+
+شما متد `Deconstruct` را به صراحت فراخوانی نمی‌کنید. این متد به صورت ضمنی زمانی که یک شیء را به یک متغیر تاپل اختصاص می‌دهید، فراخوانی می‌شود.
+
+۳. پروژه `PeopleApp` را اجرا کنید و نتیجه را مشاهده کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```
+Deconstructed person: Bob Smith, 12/22/1965 4:28:00 PM -05:00
+Deconstructed person: Bob Smith, 12/22/1965 4:28:00 PM -05:00, StatueOfZeusAtOlympia
+```
