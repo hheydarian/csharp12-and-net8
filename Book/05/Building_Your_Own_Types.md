@@ -1489,3 +1489,35 @@ Fruit fruitNamed = bob.GetNamedFruit();
 ```
 
 ۳. پروژه `PeopleApp` را اجرا کنید و متوجه شوید که نتیجه یکسان است.
+
+#### تخلیه (Deconstructing) تاپل‌ها
+
+شما همچنین می‌توانید تاپل‌ها را به متغیرهای جداگانه تخلیه (Deconstruct) کنید. اعلامیه تخلیه همان سینتکس تاپل‌های دارای نام فیلد را دارد، اما بدون متغیر نام‌گذاری شده برای خود تاپل، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+// ذخیره مقدار بازگشتی در یک متغیر تاپل با دو فیلد نام‌گذاری شده.
+(string name, int number) namedFields = bob.GetNamedFruit();
+// سپس می‌توانید به فیلدهای نام‌گذاری شده دسترسی پیدا کنید.
+WriteLine($"{namedFields.name}, {namedFields.number}");
+
+// تخلیه مقدار بازگشتی به دو متغیر جداگانه.
+(string name, int number) = bob.GetNamedFruit();
+// سپس می‌توانید به متغیرهای جداگانه دسترسی پیدا کنید.
+WriteLine($"{name}, {number}");
+```
+
+تخلیه باعث تقسیم تاپل به اجزای آن شده و آن اجزا را به متغیرهای جدید اختصاص می‌دهد. بیایید آن را در عمل ببینیم:
+
+۱. در فایل `Program.cs`، دستوراتی را اضافه کنید تا تاپل بازگشتی از متد `GetFruit` تخلیه شود، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+(string fruitName, int fruitNumber) = bob.GetFruit();
+WriteLine($"Deconstructed tuple: {fruitName}, {fruitNumber}");
+```
+
+۲. پروژه `PeopleApp` را اجرا کنید و نتیجه را مشاهده کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```
+Deconstructed tuple: Apples, 5
+```
+
