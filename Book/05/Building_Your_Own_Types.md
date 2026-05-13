@@ -1561,3 +1561,65 @@ WriteLine($"Deconstructed person: {name2}, {dob2}, {fav2}");
 Deconstructed person: Bob Smith, 12/22/1965 4:28:00 PM -05:00
 Deconstructed person: Bob Smith, 12/22/1965 4:28:00 PM -05:00, StatueOfZeusAtOlympia
 ```
+
+#### پیاده‌سازی عملکرد (functionality) با استفاده از توابع محلی (local functions)
+
+یکی از ویژگی‌های زبانی (language feature) معرفی‌شده در C# 7، قابلیت تعریف **تابع محلی** است.
+
+توابع محلی، معادل متدیِ متغیرهای محلی (local variables) هستند. به عبارت دیگر، توابعی هستند که فقط از داخل **متد حاوی (containing method)** که در آن تعریف شده‌اند، قابل دسترسی می‌باشند. در زبان‌های دیگر، گاهی از آن‌ها با نام **توابع تو در تو (nested functions)** یا **توابع داخلی (inner functions)** یاد می‌شود.
+
+توابع محلی را می‌توان در هر نقطه‌ای از داخل یک متد تعریف کرد: در ابتدا، در انتها، یا حتی جایی در میانه‌ی متد!
+
+ما از یک تابع محلی برای پیاده‌سازی محاسبه‌ی فاکتوریل استفاده خواهیم کرد:
+
+1. در فایل `Person.cs`، دستوراتی اضافه کنید تا یک تابع به نام `Factorial` تعریف شود که درون خود از یک تابع محلی برای محاسبه‌ی نتیجه استفاده کند، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+// متدی با یک تابع محلی
+public static int Factorial(int number)
+{
+    if (number < 0)
+    {
+        throw new ArgumentException(
+            $"{nameof(number)} نمی‌تواند کمتر از صفر باشد.");
+    }
+    return localFactorial(number);
+    
+    int localFactorial(int localNumber) // تابع محلی
+    {
+        if (localNumber == 0) return 1;
+        return localNumber * localFactorial(localNumber - 1);
+    }
+}
+```
+
+شما متد `Deconstruct` را به‌طور مستقیم فراخوانی نمی‌کنید. این متد به‌طور **ضمنی** زمانی فراخوانی می‌شود که یک شیء را به یک **متغیر تاپل (tuple variable)** نسبت می‌دهید.
+
+1. در فایل `Program.cs`، دستوراتی اضافه کنید تا تابع `Factorial` فراخوانی شود و مقدار بازگشتی آن به همراه **مدیریت استثنا (exception handling)** در کنسول نوشته شود، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+// عدد را به 1- تغییر دهید تا کد مدیریت استثنا اجرا شود
+int number = 5;
+try
+{
+    WriteLine($"{number}! برابر است با {Person.Factorial(number)}");
+}
+catch (Exception ex)
+{
+    WriteLine($"{ex.GetType()} می‌گوید: {ex.Message} عدد (number) برابر {number} بود.");
+}
+```
+
+1. پروژه‌ی `PeopleApp` را اجرا کرده و نتیجه را مشاهده کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```
+5! برابر است با 120
+```
+
+1. عدد را به `1-` تغییر دهید تا مدیریت استثنا را بررسی کنیم.
+
+2. پروژه‌ی `PeopleApp` را اجرا کرده و نتیجه را مشاهده کنید، همان‌طور که در خروجی زیر نشان داده شده است:
+
+```
+System.ArgumentException می‌گوید: number نمی‌تواند کمتر از صفر باشد. number برابر 1- بود.
+```
