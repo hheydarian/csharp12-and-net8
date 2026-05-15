@@ -1640,9 +1640,9 @@ System.ArgumentException می‌گوید: number نمی‌تواند کمتر ا
 public partial class Person
 ```
 
-1. در پروژه/پوشه‌ی `PacktLibraryNetStandard2`، یک فایل کلاس جدید به نام `PersonAutoGen.cs` اضافه کنید.
+2. در پروژه/پوشه‌ی `PacktLibraryNetStandard2`، یک فایل کلاس جدید به نام `PersonAutoGen.cs` اضافه کنید.
 
-2. دستوراتی را به فایل جدید اضافه کنید، همان‌طور که در کد زیر نشان داده شده است:
+3. دستوراتی را به فایل جدید اضافه کنید، همان‌طور که در کد زیر نشان داده شده است:
 
 ```csharp
 namespace Packt.Shared;
@@ -1653,7 +1653,7 @@ public partial class Person
 }
 ```
 
-1. پروژه‌ی `PacktLibraryNetStandard2` را **بیلد (build)** کنید. اگر خطای `CS0260 Missing partial modifier on declaration of type 'Person'; another partial declaration of this type exists` را مشاهده کردید، مطمئن شوید که کلیدواژه‌ی `partial` را روی هر دو کلاس `Person` اعمال کرده‌اید.
+4. پروژه‌ی `PacktLibraryNetStandard2` را **بیلد (build)** کنید. اگر خطای `CS0260 Missing partial modifier on declaration of type 'Person'; another partial declaration of this type exists` را مشاهده کردید، مطمئن شوید که کلیدواژه‌ی `partial` را روی هر دو کلاس `Person` اعمال کرده‌اید.
 
 بقیه‌ی کدی که برای این فصل می‌نویسیم، در فایل `PersonAutoGen.cs` نوشته خواهد شد.
 
