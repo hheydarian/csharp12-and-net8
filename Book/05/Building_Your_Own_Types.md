@@ -1640,9 +1640,9 @@ System.ArgumentException می‌گوید: number نمی‌تواند کمتر ا
 public partial class Person
 ```
 
-2. در پروژه/پوشه‌ی `PacktLibraryNetStandard2`، یک فایل کلاس جدید به نام `PersonAutoGen.cs` اضافه کنید.
+1. در پروژه/پوشه‌ی `PacktLibraryNetStandard2`، یک فایل کلاس جدید به نام `PersonAutoGen.cs` اضافه کنید.
 
-3. دستوراتی را به فایل جدید اضافه کنید، همان‌طور که در کد زیر نشان داده شده است:
+2. دستوراتی را به فایل جدید اضافه کنید، همان‌طور که در کد زیر نشان داده شده است:
 
 ```csharp
 namespace Packt.Shared;
@@ -1653,8 +1653,77 @@ public partial class Person
 }
 ```
 
-4. پروژه‌ی `PacktLibraryNetStandard2` را **بیلد (build)** کنید. اگر خطای `CS0260 Missing partial modifier on declaration of type 'Person'; another partial declaration of this type exists` را مشاهده کردید، مطمئن شوید که کلیدواژه‌ی `partial` را روی هر دو کلاس `Person` اعمال کرده‌اید.
+1. پروژه‌ی `PacktLibraryNetStandard2` را **بیلد (build)** کنید. اگر خطای `CS0260 Missing partial modifier on declaration of type 'Person'; another partial declaration of this type exists` را مشاهده کردید، مطمئن شوید که کلیدواژه‌ی `partial` را روی هر دو کلاس `Person` اعمال کرده‌اید.
 
 بقیه‌ی کدی که برای این فصل می‌نویسیم، در فایل `PersonAutoGen.cs` نوشته خواهد شد.
 
 حالا که مثال‌های زیادی از فیلدها و متدها را دیده‌اید، به برخی از انواع تخصصی‌تر متدها خواهیم پرداخت که می‌توانند برای دسترسی به فیلدها به منظور فراهم کردن کنترل و بهبود تجربه‌ی برنامه‌نویس استفاده شوند.
+
+---
+
+#### کنترل دسترسی با properties و indexers
+
+پیشتر، متدی به نام `GetOrigin` ایجاد کردید که یک string شامل نام و منشأ شخص را برمی‌گرداند. زبان‌هایی مانند جاوا این کار را زیاد انجام می‌دهند. اما C# راه بهتری دارد و آن **properties** نامیده می‌شوند.
+
+یک property به زبان ساده، یک method (یا یک جفت method) است که وقتی می‌خواهید مقداری را get یا set کنید، مانند یک field رفتار کرده و به نظر می‌رسد، اما در باطن مانند یک method عمل می‌کند و در نتیجه syntax را ساده‌تر ساخته و قابلیت‌هایی مانند validation و calculation را هنگام set و get کردن مقدار فراهم می‌آورد.
+
+یک تفاوت اساسی بین field و property این است که یک field آدرس حافظه‌ی data را در اختیار می‌گذارد. شما می‌توانید آن آدرس حافظه را به یک مؤلفه‌ی خارجی، مانند یک فراخوانی تابع به سبک C در Windows API، ارسال کنید و سپس آن مؤلفه بتواند data را تغییر دهد. یک property آدرس حافظه‌ی dataهای خود را در اختیار نمی‌گذارد و این امر کنترل بیشتری فراهم می‌کند. تمام کاری که می‌توانید انجام دهید این است که از property بخواهید data را get یا set کند. سپس property دستورات را اجرا کرده و می‌تواند تصمیم بگیرد که چگونه پاسخ دهد، از جمله رد کردن درخواست!
+
+---
+
+#### تعریف read-only properties
+
+یک read-only property فقط یک پیاده‌سازی `get` دارد:
+
+1. در فایل `PersonAutoGen.cs`، در کلاس `Person`، دستوراتی اضافه کنید تا سه property تعریف شود:
+   * اولین property همان نقش متد `GetOrigin` را انجام می‌دهد، با استفاده از syntax property که با تمام نسخه‌های C# کار می‌کند.
+   * دومین property یک پیام خوش‌آمدگویی برمی‌گرداند، با استفاده از syntax بدنه‌ی lambda expression با `=>` از C# 6 به بعد.
+   * سومین property سن شخص را محاسبه می‌کند.
+
+در اینجا کد آمده است:
+
+```csharp
+#region Properties: Methods to get and/or set data or state.
+// یک read-only property که با استفاده از syntax C# 1 تا 5 تعریف شده است
+public string Origin
+{
+    get
+    {
+        return string.Format("{0} was born on {1}.",
+            arg0: Name, arg1: HomePlanet);
+    }
+}
+
+// دو read-only property که با استفاده از syntax بدنه‌ی lambda expression
+// در C# 6 یا جدیدتر تعریف شده‌اند
+public string Greeting => $"{Name} says 'Hello!'";
+public int Age => DateTime.Today.Year - Born.Year;
+#endregion
+```
+
+**توصیه‌ی خوب:** این بهترین روش برای محاسبه‌ی سن کسی نیست، اما هدف ما یادگیری محاسبه‌ی سن از تاریخ و زمان تولد نیست. اگر نیاز دارید که این کار را به درستی انجام دهید، بحث موجود در لینک زیر را مطالعه کنید:  
+<https://stackoverflow.com/questions/9/how-do-i-calculate-someones-age-in-c>
+
+1. در فایل `Program.cs`، دستوراتی اضافه کنید تا properties را دریافت (get) کنید، همانطور که در کد زیر نشان داده شده است:
+
+```csharp
+Person sam = new()
+{
+    Name = "Sam",
+    Born = new(1969, 6, 25, 0, 0, 0, TimeSpan.Zero)
+};
+
+WriteLine(sam.Origin);
+WriteLine(sam.Greeting);
+WriteLine(sam.Age);
+```
+
+1. پروژه‌ی `PeopleApp` را اجرا کرده و نتیجه را مشاهده کنید، همانطور که در خروجی زیر نشان داده شده است:
+
+```
+Sam was born on Earth
+Sam says 'Hello!'
+54
+```
+
+خروجی عدد 54 را نشان می‌دهد برنامه‌ی کنسول را در تاریخ ۵ ژوئیه‌ی ۲۰۲۳ اجرا کردم، زمانی که سم ۵۴ سال داشت.
