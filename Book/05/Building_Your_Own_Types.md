@@ -1727,3 +1727,97 @@ Sam says 'Hello!'
 ```
 
 خروجی عدد 54 را نشان می‌دهد برنامه‌ی کنسول را در تاریخ ۵ ژوئیه‌ی ۲۰۲۳ اجرا کردم، زمانی که سم ۵۴ سال داشت.
+
+---
+
+#### تعریف settable properties
+
+برای ایجاد یک settable property، باید از syntax قدیمی‌تر استفاده کنید و یک جفت method ارائه دهید — نه فقط یک بخش `get`، بلکه یک بخش `set` نیز داشته باشد:
+
+1. در فایل `PersonAutoGen.cs`، دستوراتی اضافه کنید تا یک string property تعریف شود که هم `get` و هم `set` method داشته باشد (که با نام‌های getter و setter نیز شناخته می‌شوند)، همانطور که در کد زیر نشان داده شده است:
+
+```csharp
+// یک read-write property که با استفاده از syntax خودکار C# 3 تعریف شده است
+public string? FavoriteIceCream { get; set; }
+```
+
+اگرچه شما به‌صورت دستی یک field برای ذخیره‌ی بستنی موردعلاقه‌ی شخص ایجاد نکرده‌اید، اما آن field وجود دارد و به‌طور خودکار توسط کامپایلر برای شما ایجاد شده است.
+
+گاهی اوقات، شما به کنترل بیشتری بر آنچه هنگام set شدن یک property اتفاق می‌افتد نیاز دارید. در این سناریو، باید از syntax دقیق‌تری استفاده کنید و به‌صورت دستی یک private field برای ذخیره‌ی مقدار property ایجاد کنید.
+
+1. در فایل `PersonAutoGen.cs`، دستوراتی اضافه کنید تا یک private string field تعریف شود که به عنوان backing field شناخته می‌شود، همانطور که در کد زیر نشان داده شده است:
+
+```csharp
+// یک private backing field برای ذخیره‌ی مقدار property
+private string? _favoritePrimaryColor;
+```
+
+**توصیه‌ی خوب:** اگرچه هیچ استاندارد رسمی برای نام‌گذاری private fieldها وجود ندارد، اما رایج‌ترین روش استفاده از camel case با پیشوند underscore است.
+
+1. در فایل `PersonAutoGen.cs`، دستوراتی اضافه کنید تا یک string property تعریف شود که هم `get` و هم `set` داشته باشد و منطق اعتبارسنجی در setter آن قرار گیرد، همانطور که در کد زیر نشان داده شده است:
+
+```csharp
+// یک public property برای خواندن و نوشتن در field
+public string? FavoritePrimaryColor
+{
+    get
+    {
+        return _favoritePrimaryColor;
+    }
+    set
+    {
+        switch (value?.ToLower())
+        {
+            case "red":
+            case "green":
+            case "blue":
+                _favoritePrimaryColor = value;
+                break;
+            default:
+                throw new ArgumentException(
+                    $"{value} is not a primary color. " +
+                    "Choose from: red, green, blue.");
+        }
+    }
+}
+```
+
+**توصیه‌ی خوب:** از اضافه کردن کد بیش از حد به getterها و setterهای خود اجتناب کنید. این می‌تواند نشان‌دهنده‌ی مشکلی در طراحی شما باشد. اضافه کردن private methodهایی که سپس در متدهای set و get فراخوانی می‌کنید تا پیاده‌سازی‌های خود را ساده‌تر کنید، در نظر بگیرید.
+
+1. در فایل `Program.cs`، دستوراتی اضافه کنید تا بستنی و رنگ موردعلاقه‌ی سم را set کنید و سپس آن‌ها را چاپ کنید، همانطور که در کد زیر نشان داده شده است:
+
+```csharp
+sam.FavoriteIceCream = "Chocolate Fudge";
+WriteLine($"Sam's favorite ice-cream flavor is {sam.FavoriteIceCream}.");
+
+string color = "Red";
+try
+{
+    sam.FavoritePrimaryColor = color;
+    WriteLine($"Sam's favorite primary color is {sam.FavoritePrimaryColor}.");
+}
+catch (Exception ex)
+{
+    WriteLine("Tried to set {0} to '{1}': {2}",
+        nameof(sam.FavoritePrimaryColor), color, ex.Message);
+}
+```
+
+کتاب چاپی به حدود ۸۲۰ صفحه محدود شده است. اگر من کد مدیریت استثنا را به تمام مثال‌های کد اضافه می‌کردم همانطور که در اینجا انجام دادیم، احتمالاً مجبور می‌شدم حداقل یک فصل را از کتاب حذف کنم تا فضای کافی ایجاد شود. در آینده، من به‌طور صریح به شما نخواهم گفت که کد مدیریت استثنا اضافه کنید، اما خودتان عادت کنید که در مواقع نیاز آن را اضافه کنید.
+
+1. پروژه‌ی `PeopleApp` را اجرا کرده و نتیجه را مشاهده کنید، همانطور که در خروجی زیر نشان داده شده است:
+
+```
+Sam's favorite ice-cream flavor is Chocolate Fudge.
+Sam's favorite primary color is Red.
+```
+
+1. سعی کنید رنگ را به هر مقداری به جز قرمز، سبز یا آبی، مثلاً مشکی، تنظیم کنید.
+
+2. پروژه‌ی `PeopleApp` را اجرا کرده و نتیجه را مشاهده کنید، همانطور که در خروجی زیر نشان داده شده است:
+
+```
+Tried to set FavoritePrimaryColor to 'Black': Black is not a primary color. Choose from: red, green, blue.
+```
+
+**توصیه‌ی خوب:** به جای fields از properties استفاده کنید زمانی که می‌خواهید در هنگام خواندن یا نوشتن بر روی یک field دستوراتی را بدون استفاده از یک جفت method مانند `GetAge` و `SetAge` اجرا کنید.
