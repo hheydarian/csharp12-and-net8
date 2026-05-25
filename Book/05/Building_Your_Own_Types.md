@@ -1992,3 +1992,53 @@ Sam's second child is Ella.
 Sam's child named Ella is 3 years old.
 
 ```
+
+### الگوی تطبیق (Pattern Matching) با شیءها
+
+در فصل ۳، *«کنترل جریان، تبدیل انواع داده و مدیریت استثناها»*، با مفاهیم پایه‌ای الگوی تطبیق آشنا شدید. در این بخش، الگوی تطبیق را با جزئیات بیشتری بررسی خواهیم کرد.
+
+#### الگوی تطبیق برای مسافران یک پرواز
+
+در این مثال، کلاس‌هایی را تعریف می‌کنیم که نشان‌دهنده انواع مختلف مسافران یک پرواز هستند و سپس از یک عبارت `switch` همراه با الگوی تطبیق (Pattern Matching) استفاده می‌کنیم تا هزینه بلیط پرواز آن‌ها را تعیین کنیم:
+
+1. در پروژه یا پوشه **PacktLibraryNetStandard2**، فایل جدیدی به نام **FlightPatterns.cs** ایجاد کنید.
+2. اگر از ویژوال استودیو ۲۰۲۲ استفاده می‌کنید، دستورات پیش‌فرض داخل فایل **FlightPatterns.cs** (از جمله کلاسی که به همین نام ایجاد شده است) را حذف کنید؛ چرا که ما قصد داریم چندین کلاس مختلف تعریف کنیم و هیچ‌کدام از آن‌ها با نام این فایل کد مطابقت ندارند.
+3. در فایل **FlightPatterns.cs**، دستوراتی را برای تعریف سه نوع مسافر با ویژگی‌های (Properties) متفاوت اضافه کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+// تمام کلاس‌های موجود در این فایل در فضای نام زیر تعریف خواهند شد.
+namespace Packt.Shared;
+
+public class Passenger
+{
+  public string? Name { get; set; }
+}
+
+public class BusinessClassPassenger : Passenger
+{
+  public override string ToString()
+  {
+    return $"Business Class: {Name}";
+  }
+}
+
+public class FirstClassPassenger : Passenger
+{
+  public int AirMiles { get; set; }
+  public override string ToString()
+  {
+    return $"First Class with {AirMiles:N0} air miles: {Name}";
+  }
+}
+
+public class CoachClassPassenger : Passenger
+{
+  public double CarryOnKG { get; set; }
+
+  public override string ToString()
+  {
+    return $"Coach Class with {CarryOnKG:N2} KG carry on: {Name}";
+  }
+}
+
+```
