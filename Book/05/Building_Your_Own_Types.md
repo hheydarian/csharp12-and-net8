@@ -1821,3 +1821,87 @@ Tried to set FavoritePrimaryColor to 'Black': Black is not a primary color. Choo
 ```
 
 **توصیه‌ی خوب:** به جای fields از properties استفاده کنید زمانی که می‌خواهید در هنگام خواندن یا نوشتن بر روی یک field دستوراتی را بدون استفاده از یک جفت method مانند `GetAge` و `SetAge` اجرا کنید.
+
+---
+
+#### محدود کردن مقادیر برای enumهای نشانه‌ای (Flags)
+
+پیش‌تر در همین فصل، فیلدی را برای ذخیره کردن عجایب باستان موردعلاقه یک فرد تعریف کردیم. اما بعد از آن، enum را به‌گونه‌ای تغییر دادیم که بتواند ترکیبی از مقادیر را در خود ذخیره کند. اکنون بیایید این فیلد علاقه‌مندی را تنها به یک مورد محدود کنیم:
+
+1. در فایل **Person.cs**، فیلد `FavoriteAncientWonder` را کامنت کنید و یک کامنت دیگر اضافه کنید تا مشخص شود این فیلد به فایل کد **PersonAutoGen.cs** منتقل شده است؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+// این مورد به عنوان یک ویژگی به فایل PersonAutoGen.cs منتقل شده است.
+// public WondersOfTheAncientWorld FavoriteAncientWonder;
+
+```
+
+1. در فایل **PersonAutoGen.cs**، یک فیلد خصوصی (private) و یک ویژگی عمومی (public) برای `FavoriteAncientWonder` اضافه کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+private WondersOfTheAncientWorld _favoriteAncientWonder;
+public WondersOfTheAncientWorld FavoriteAncientWonder
+{
+  get { return _favoriteAncientWonder; }
+  set
+  {
+    string wonderName = value.ToString();
+    if (wonderName.Contains(','))
+    {
+      throw new ArgumentException(
+        message: "Favorite ancient wonder can only have a single enum value.",
+        paramName: nameof(FavoriteAncientWonder));
+    }
+
+```
+
+> **توصیه اصولی (Good Practice):** زمانی که می‌خواهید هنگام خواندن یا نوشتن در یک فیلد، دستوراتی را بدون استفاده از یک جفت متد (مانند `GetAge` و `SetAge`) اجرا کنید، به جای فیلدها از ویژگی‌ها (Properties) استفاده کنید.
+
+```csharp
+    if (!Enum.IsDefined(typeof(WondersOfTheAncientWorld), value))
+    {
+      throw new ArgumentException(
+        $"{value} is not a member of the WondersOfTheAncientWorld enum.",
+        paramName: nameof(FavoriteAncientWonder));
+    }
+    _favoriteAncientWonder = value;
+  }
+}
+
+```
+
+می‌توانستیم این اعتبارسنجی را ساده‌تر کنیم و فقط بررسی کنیم که آیا مقدار داده‌شده در `enum` اصلی تعریف شده است یا خیر؛ چرا که متد `IsDefined` برای مقادیر چندگانه (ترکیبی) و مقادیر تعریف‌نشده، مقدار `false` را برمی‌گرداند. با این حال، من می‌خواهم برای مقادیر چندگانه یک استثنای (Exception) متفاوت نشان دهم، بنابراین از این واقعیت استفاده می‌کنم که مقادیر چندگانه زمانی که به رشته (String) تبدیل می‌شوند، شامل یک کاما (`,`) در لیست نام‌ها خواهند بود. این موضوع همچنین به این معنی است که ما باید قبل از بررسی تعریف‌شده بودن مقدار، وجود مقادیر چندگانه را بررسی کنیم. یک لیست جداشده با کاما، روشی است که مقادیر چندگانه `enum` به صورت رشته نمایش داده می‌شوند، اما شما نمی‌توانید از کاما برای مقداردهی چندگانه یک `enum` استفاده کنید. برای این کار باید از اپراتور `|` (یا بیت‌به‌بیت / bitwise OR) استفاده کنید.
+
+1. در فایل **Program.cs**، در ناحیه (region) مشخص‌شده با نام *Storing a value using an enum type*، عجایب موردعلاقه باب را روی بیش از یک مقدار `enum` تنظیم کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+bob.FavoriteAncientWonder = 
+  WondersOfTheAncientWorld.StatueOfZeusAtOlympia |
+  WondersOfTheAncientWorld.GreatPyramidOfGiza;
+
+```
+
+1. پروژه **PeopleApp** را اجرا کنید و به استثنای صادرشده توجه کنید؛ همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+Unhandled exception. System.ArgumentException: Favorite ancient wonder can only have a single enum value. (Parameter 'FavoriteAncientWonder')
+   at Packt.Shared.Person.set_FavoriteAncientWonder(WondersOfTheAncientWorld value) in C:\cs12dotnet8\Chapter05\PacktLibraryNetStandard2\PersonAutoGen.cs:line 67
+   at Program.$(String[] args) in C:\cs12dotnet8\Chapter05\PeopleApp\Program.cs:line 57
+
+```
+
+1. در فایل **Program.cs**، عجایب موردعلاقه باب را روی یک مقدار نامعتبر مانند `128` تنظیم کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+bob.FavoriteAncientWonder = (WondersOfTheAncientWorld)128;
+
+```
+
+1. پروژه **PeopleApp** را اجرا کنید و به استثنای صادرشده توجه کنید؛ همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+Unhandled exception. System.ArgumentException: 128 is not a member of the WondersOfTheAncientWorld enum. (Parameter 'FavoriteAncientWonder')
+
+```
+
+1. در فایل **Program.cs**، عجایب موردعلاقه باب را مجدداً روی یک تک‌مقدار معتبر از `enum` تنظیم کنید.
