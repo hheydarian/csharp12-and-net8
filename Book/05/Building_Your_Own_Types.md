@@ -1872,7 +1872,7 @@ public WondersOfTheAncientWorld FavoriteAncientWonder
 
 می‌توانستیم این اعتبارسنجی را ساده‌تر کنیم و فقط بررسی کنیم که آیا مقدار داده‌شده در `enum` اصلی تعریف شده است یا خیر؛ چرا که متد `IsDefined` برای مقادیر چندگانه (ترکیبی) و مقادیر تعریف‌نشده، مقدار `false` را برمی‌گرداند. با این حال، من می‌خواهم برای مقادیر چندگانه یک استثنای (Exception) متفاوت نشان دهم، بنابراین از این واقعیت استفاده می‌کنم که مقادیر چندگانه زمانی که به رشته (String) تبدیل می‌شوند، شامل یک کاما (`,`) در لیست نام‌ها خواهند بود. این موضوع همچنین به این معنی است که ما باید قبل از بررسی تعریف‌شده بودن مقدار، وجود مقادیر چندگانه را بررسی کنیم. یک لیست جداشده با کاما، روشی است که مقادیر چندگانه `enum` به صورت رشته نمایش داده می‌شوند، اما شما نمی‌توانید از کاما برای مقداردهی چندگانه یک `enum` استفاده کنید. برای این کار باید از اپراتور `|` (یا بیت‌به‌بیت / bitwise OR) استفاده کنید.
 
-1. در فایل **Program.cs**، در ناحیه (region) مشخص‌شده با نام *Storing a value using an enum type*، عجایب موردعلاقه باب را روی بیش از یک مقدار `enum` تنظیم کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+3. در فایل **Program.cs**، در ناحیه (region) مشخص‌شده با نام *Storing a value using an enum type*، عجایب موردعلاقه باب را روی بیش از یک مقدار `enum` تنظیم کنید؛ همان‌طور که در کد زیر نشان داده شده است:
 
 ```csharp
 bob.FavoriteAncientWonder = 
@@ -1881,7 +1881,7 @@ bob.FavoriteAncientWonder =
 
 ```
 
-1. پروژه **PeopleApp** را اجرا کنید و به استثنای صادرشده توجه کنید؛ همان‌طور که در خروجی زیر نشان داده شده است:
+4. پروژه **PeopleApp** را اجرا کنید و به استثنای صادرشده توجه کنید؛ همان‌طور که در خروجی زیر نشان داده شده است:
 
 ```text
 Unhandled exception. System.ArgumentException: Favorite ancient wonder can only have a single enum value. (Parameter 'FavoriteAncientWonder')
@@ -1890,18 +1890,105 @@ Unhandled exception. System.ArgumentException: Favorite ancient wonder can only 
 
 ```
 
-1. در فایل **Program.cs**، عجایب موردعلاقه باب را روی یک مقدار نامعتبر مانند `128` تنظیم کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+5. در فایل **Program.cs**، عجایب موردعلاقه باب را روی یک مقدار نامعتبر مانند `128` تنظیم کنید؛ همان‌طور که در کد زیر نشان داده شده است:
 
 ```csharp
 bob.FavoriteAncientWonder = (WondersOfTheAncientWorld)128;
 
 ```
 
-1. پروژه **PeopleApp** را اجرا کنید و به استثنای صادرشده توجه کنید؛ همان‌طور که در خروجی زیر نشان داده شده است:
+6. پروژه **PeopleApp** را اجرا کنید و به استثنای صادرشده توجه کنید؛ همان‌طور که در خروجی زیر نشان داده شده است:
 
 ```text
 Unhandled exception. System.ArgumentException: 128 is not a member of the WondersOfTheAncientWorld enum. (Parameter 'FavoriteAncientWonder')
 
 ```
 
-1. در فایل **Program.cs**، عجایب موردعلاقه باب را مجدداً روی یک تک‌مقدار معتبر از `enum` تنظیم کنید.
+7. در فایل **Program.cs**، عجایب موردعلاقه باب را مجدداً روی یک تک‌مقدار معتبر از `enum` تنظیم کنید.
+
+---
+
+### تعریف ایندکسرها (Indexers)
+
+ایندکسرها به کدهای فراخوان (Calling Code) اجازه می‌دهند تا برای دسترسی به یک ویژگی (Property) از نحو یا سینتکس آرایه (Array Syntax) استفاده کنند. به عنوان مثال، نوع داده‌ای `string` یک ایندکسر را تعریف می‌کند تا کدهای فراخوان بتوانند به کاراکترهای فردی در آن رشته دسترسی داشته باشند؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+string alphabet = "abcdefghijklmnopqrstuvwxyz";
+char letterF = alphabet[5]; // مقدار 0 برابر با a، مقدار 1 برابر با b و به همین ترتیب است.
+
+```
+
+شما می‌توانید ایندکسرها را اورلود (Overload) کنید تا بتوان از انواع داده‌ای مختلف برای پارامترهای آن‌ها استفاده کرد. به عنوان مثال، علاوه بر پاس دادن یک مقدار `int`، می‌توانید یک مقدار `string` را نیز پاس بدهید.
+
+ما یک ایندکسر تعریف خواهیم کرد تا دسترسی به فرزندان یک شخص (Children) را ساده‌تر کنیم:
+
+1. در فایل **PersonAutoGen.cs**، دستوراتی را برای تعریف یک ایندکسر جهت گرفتن (get) و مقداردهی (set) یک فرزند با استفاده از اندیسِ (Index) آن فرزند اضافه کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+#region Indexers: Properties that use array syntax to access them.
+public Person this[int index]
+{
+  get
+  {
+    return Children[index]; // این مقدار را به ایندکسرِ خود List پاس می‌دهد.
+  }
+  set
+  {
+    Children[index] = value;
+  }
+}
+#endregion
+
+```
+
+2. در فایل **PersonAutoGen.cs**، دستوراتی را برای تعریف یک ایندکسر جهت گرفتن و مقداردهی یک فرزند با استفاده از نامِ (Name) آن فرزند اضافه کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+// یک ایندکسرِ فقط‌خواندنی (Read-only) از نوع رشته.
+public Person this[string name]
+{
+  get
+
+```
+
+```csharp
+  {
+    return Children.Find(p => p.Name == name);
+  }
+}
+
+---
+
+شما در فصل ۸، *«کار با انواع داده‌های رایج دات‌نت»*، اطلاعات بیشتری درباره مجموعه‌ها (Collections) مانند `List` کسب خواهید کرد؛ همچنین نحوه نوشتن عبارت‌های لمبدا (Lambda Expressions) با استفاده از علامت `<=‌` را در فصل ۱۱، *«پرس‌و‌جو و مدیریت داده‌ها با استفاده از LINQ»* خواهید آموخت.
+
+3. در فایل **Program.cs**، دستوراتی را برای اضافه کردن دو فرزند به `sam` اضافه کنید، و سپس با استفاده از فیلد طولانی‌ترِ `Children` و همچنین نحو کوتاه‌ترِ ایندکسر، به فرزندان اول و دوم دسترسی پیدا کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+sam.Children.Add(new() { Name = "Charlie",
+  Born = new(2010, 3, 18, 0, 0, 0, TimeSpan.Zero) });
+sam.Children.Add(new() { Name = "Ella",
+  Born = new(2020, 12, 24, 0, 0, 0, TimeSpan.Zero) });
+
+// دریافت با استفاده از لیست Children
+WriteLine($"Sam's first child is {sam.Children[0].Name}."); 
+WriteLine($"Sam's second child is {sam.Children[1].Name}.");
+
+// دریافت با استفاده از ایندکسر عددی (int)
+WriteLine($"Sam's first child is {sam[0].Name}."); 
+WriteLine($"Sam's second child is {sam[1].Name}.");
+
+// دریافت با استفاده از ایندکسر رشته‌ای (string)
+WriteLine($"Sam's child named Ella is {sam["Ella"].Age} years old.");
+
+```
+
+4. پروژه **PeopleApp** را اجرا کنید و نتیجه را مشاهده کنید؛ همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+Sam's first child is Charlie.
+Sam's second child is Ella.
+Sam's first child is Charlie.
+Sam's second child is Ella.
+Sam's child named Ella is 3 years old.
+
+```
