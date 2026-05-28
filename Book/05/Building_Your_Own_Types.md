@@ -2042,3 +2042,100 @@ public class CoachClassPassenger : Passenger
 }
 
 ```
+
+شما در فصل ۶، *«پیاده‌سازی اینترفیس‌ها و ارث‌بری کلاس‌ها»*، اطلاعات بیشتری درباره اورراید (Override) کردن متد `ToString` کسب خواهید کرد.
+
+4. در فایل **Program.cs**، دستوراتی را برای تعریف یک آرایه از اشیاء (Object Array) شامل پنج مسافر با انواع مختلف و مقادیر ویژگی‌های متفاوت اضافه کنید؛ سپس با پیمایش (Enumerate) آن‌ها، هزینه پرواز هرکدام را خروجی بگیرید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+// آرایه‌ای شامل ترکیبی از انواع مسافران
+Passenger[] passengers = {
+  new FirstClassPassenger { AirMiles = 1_419, Name = "Suman" },
+  new FirstClassPassenger { AirMiles = 16_562, Name = "Lucy" },
+  new BusinessClassPassenger { Name = "Janice" },
+  new CoachClassPassenger { CarryOnKG = 25.7, Name = "Dave" },
+  new CoachClassPassenger { CarryOnKG = 0, Name = "Amit" },
+};
+
+foreach (Passenger passenger in passengers)
+{
+  decimal flightCost = passenger switch
+  {
+    FirstClassPassenger p when p.AirMiles > 35_000 => 1_500M, 
+    FirstClassPassenger p when p.AirMiles > 15_000 => 1_750M, 
+    FirstClassPassenger _                         => 2_000M,
+    BusinessClassPassenger _                      => 1_000M,
+    CoachClassPassenger p when p.CarryOnKG < 10.0 => 500M, 
+    CoachClassPassenger _                         => 650M,
+    _                                             => 800M
+  };
+
+  WriteLine($"Flight costs {flightCost:C} for {passenger}");
+}
+
+```
+
+هنگام بررسی کد بالا، به نکات زیر توجه کنید:
+
+* بیشتر ادیتورهای کد، علامت‌های لمبدا (`=>`) را مانند آنچه من در بالا انجام داده‌ام، زیر هم تراز (Align) نمی‌کنند.
+* برای اعمال الگوی تطبیق (Pattern Match) روی ویژگی‌های یک شیء، باید نامی برای یک متغیر محلی (مانند `p`) تعیین کنید تا بتوانید از آن در عبارت شرطی استفاده نمایید.
+
+* برای تطبیق الگو صرفاً بر اساس «نوع داده» (Type)، می‌توانید از دیسکارد یا متغیر بی‌نام (`_`) استفاده کنید تا متغیر محلی نادیده گرفته شود. به عنوان مثال، `FirstClassPassenger _` به این معنی است که شما نوع داده را مطابقت می‌دهید، اما مقادیر ویژگی‌های آن برایتان اهمیتی ندارد؛ بنابراین به یک متغیر نام‌گذاری‌شده مانند `p` نیازی نیست. تا چند لحظه دیگر خواهید دید که چگونه می‌توانیم این کد را از این هم بهتر کنیم.
+* عبارت `switch` نیز از `_` برای نشان دادن شاخه پیش‌فرض (Default Branch) خود استفاده می‌کند.
+
+5. پروژه **PeopleApp** را اجرا کنید و نتیجه را مشاهده کنید؛ همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+Flight costs $2,000.00 for First Class with 1,419 air miles: Suman
+Flight costs $1,750.00 for First Class with 16,562 air miles: Lucy
+Flight costs $1,000.00 for Business Class: Janice
+Flight costs $650.00 for Coach Class with 25.70 KG carry on: Dave
+Flight costs $500.00 for Coach Class with 0.00 KG carry on: Amit
+
+```
+ترجمه بخش نهایی مربوط به بهبودهای الگوی تطبیق (Pattern Matching) در سی‌شارپ ۹ و نسخه‌های بالاتر به شرح زیر است:
+
+---
+
+### بهبودهای الگوی تطبیق (Pattern Matching) در سی‌شارپ ۹ یا بالاتر
+
+مثال‌های قبلی با سی‌شارپ ۸ سازگار بودند. اکنون به بررسی برخی از بهبودهای معرفی‌شده در سی‌شارپ ۹ و نسخه‌های پس از آن می‌پردازیم. اول از همه، دیگر نیازی به استفاده از علامت دیسکارد یا متغیر بی‌نام (`_`) برای نادیده گرفتن متغیر محلی در زمان تطبیق نوع داده (Type Matching) ندارید:
+
+1. در فایل **Program.cs**، نحو مربوط به سی‌شارپ ۸ را کامنت کنید و نحو سی‌شارپ ۹ و بالاتر را جایگزین نمایید تا شاخه‌های مربوط به مسافران درجه یک (First Class) تغییر کنند؛ در این تغییر، از یک عبارت `switch` تودرتو (Nested Switch) و پشتیبانی جدید از عملگرهای مقایسه‌ای مانند `<` استفاده شده است، همان‌طور که در کد زیر برجسته (هایلایت) شده است:
+
+```csharp
+decimal flightCost = passenger switch
+{
+  /* نحو سی‌شارپ ۸
+  FirstClassPassenger p when p.AirMiles > 35_000 => 1_500M,
+  FirstClassPassenger p when p.AirMiles > 15_000 => 1_750M,
+  FirstClassPassenger _                          => 2_000M, */
+
+  // نحو سی‌شارپ ۹ یا بالاتر
+  FirstClassPassenger p => p.AirMiles switch
+  {
+    > 35_000 => 1_500M,
+    > 15_000 => 1_750M,
+    _        => 2_000M
+  },
+  BusinessClassPassenger                        => 1_000M,
+  CoachClassPassenger p when p.CarryOnKG < 10.0 => 500M,
+  CoachClassPassenger                           => 650M,
+  _                                             => 800M
+};
+
+```
+
+2. پروژه **PeopleApp** را اجرا کنید تا نتایج را مشاهده کنید و توجه داشته باشید که خروجی‌ها دقیقاً همانند گذشته هستند.
+
+شما همچنین می‌توانید «الگوی مقایسه‌ای» (Relational Pattern) را با «الگوی ویژگی» (Property Pattern) ترکیب کنید تا از نوشتن عبارت `switch` تودرتو جلوگیری کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+FirstClassPassenger { AirMiles: > 35_000 } => 1_500M,
+FirstClassPassenger { AirMiles: > 15_000 } => 1_750M,
+FirstClassPassenger                        => 2_000M,
+
+```
+
+> **اطلاعات بیشتر:** روش‌های بسیار متنوع دیگری نیز برای استفاده از الگوی تطبیق در پروژه‌های شما وجود دارد. توصیه می‌کنم مستندات رسمی مایکروسافت را در لینک زیر مرور کنید:
+> [https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching)
