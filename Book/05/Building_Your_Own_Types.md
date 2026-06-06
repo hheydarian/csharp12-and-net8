@@ -2139,3 +2139,57 @@ FirstClassPassenger                        => 2_000M,
 
 > **اطلاعات بیشتر:** روش‌های بسیار متنوع دیگری نیز برای استفاده از الگوی تطبیق در پروژه‌های شما وجود دارد. توصیه می‌کنم مستندات رسمی مایکروسافت را در لینک زیر مرور کنید:
 > [https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/functional/pattern-matching)
+
+---
+
+### کار با انواع داده‌ای رکورد (Record Types)
+
+قبل از اینکه عمیقاً به ویژگی جدید زبان یعنی `record` بپردازیم، بیایید با چند ویژگی مرتبط و جدید دیگر در سی‌شارپ ۹ و نسخه‌های بالاتر آشنا شویم.
+
+#### ویژگی‌های فقط-مقداردهیِ اولیه (Init-only Properties)
+
+شما در سراسر این فصل، از نحوِ مقداردهی اولیه شیء (Object Initialization Syntax) برای نمونه‌سازی (Instantiate) اشیاء و تنظیم ویژگی‌های اولیه آن‌ها استفاده کرده‌اید. این ویژگی‌ها را می‌توان پس از نمونه‌سازی نیز تغییر داد.
+
+اما گاهی اوقات، می‌خواهید با ویژگی‌ها مانند فیلدهای فقط‌خواندنی (`readonly`) رفتار کنید؛ به طوری که فقط در طول فرایند نمونه‌سازی قابل تنظیم باشند و پس از آن دیگر نتوان تغییری در آن‌ها ایجاد کرد. به عبارت دیگر، آن‌ها **تغییرناپذیر (Immutable)** هستند. کلمه کلیدی `init` این قابلیت را فراهم می‌کند. از این کلمه کلیدی می‌توان به جای کلمه کلیدی `set` در تعریف یک ویژگی استفاده کرد.
+
+از آنجایی که این یک ویژگی زبانی (Language Feature) است و توسط **.NET Standard 2.0** پشتیبانی نمی‌شود، نمی‌توانیم از آن در پروژه *PacktLibraryNetStandard2* استفاده کنیم. ما باید آن را در پروژه مدرن خود به کار ببریم:
+
+1. در پروژه **PacktLibraryModern**، فایل جدیدی به نام **Records.cs** ایجاد کنید.
+2. در فایل **Records.cs**، یک کلاس برای شخص با دو ویژگیِ تغییرناپذیر تعریف کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+namespace Packt.Shared;
+
+public class ImmutablePerson
+{
+  public string? FirstName { get; init; }
+  public string? LastName { get; init; }
+}
+
+```
+
+3. در فایل **Program.cs**، دستوراتی را برای نمونه‌سازی یک شخص تغییرناپذیر جدید اضافه کنید و سپس سعی کنید یکی از ویژگی‌های آن را تغییر دهید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+ImmutablePerson jeff = new() 
+{
+  FirstName = "Jeff",
+  LastName = "Winger"
+};
+
+jeff.FirstName = "Geoff";
+
+```
+
+4. برنامه کنسول را کامپایل کنید و به خطای کامپایل صادرشده توجه کنید؛ همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+C:\cs12dotnet8\Chapter05\PeopleApp\Program.cs(404,1): error CS8852: Init-only property or indexer 'ImmutablePerson.FirstName' can only be assigned in an object initializer, or on 'this' or 'base' in an instance constructor or an 'init' accessor. [/Users/markjprice/Code/Chapter05/PeopleApp/PeopleApp.csproj]
+
+```
+
+5. خطی که در آن تلاش شده ویژگی `FirstName` پس از نمونه‌سازی مقداردهی شود را کامنت کنید.
+
+حتی اگر مقدار `FirstName` را در مقداردهی اولیه شیء (Object Initializer) تنظیم نکنید، باز هم نمی‌توانید آن را پس از مقداردهی اولیه (Post-initialization) تنظیم کنید. اگر نیاز دارید تا تنظیم یک ویژگی را اجباری کنید، باید کلمه کلیدی `required` را اعمال کنید که پیش‌تر در همین فصل درباره آن آموختید.
+
+---
