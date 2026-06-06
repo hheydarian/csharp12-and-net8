@@ -2193,3 +2193,339 @@ C:\cs12dotnet8\Chapter05\PeopleApp\Program.cs(404,1): error CS8852: Init-only pr
 حتی اگر مقدار `FirstName` را در مقداردهی اولیه شیء (Object Initializer) تنظیم نکنید، باز هم نمی‌توانید آن را پس از مقداردهی اولیه (Post-initialization) تنظیم کنید. اگر نیاز دارید تا تنظیم یک ویژگی را اجباری کنید، باید کلمه کلیدی `required` را اعمال کنید که پیش‌تر در همین فصل درباره آن آموختید.
 
 ---
+
+### تعریف انواع داده‌ای رکورد (Record Types)
+
+ویژگی‌های فقط-مقداردهی اولیه (`init`)، تا حدی قابلیت تغییرناپذیری (Immutability) را به سی‌شارپ می‌آورند. شما می‌توانید این مفهوم را با استفاده از **انواع داده‌ای رکورد (Record Types)** فراتر ببرید. این انواع داده با استفاده از کلمه کلیدی `record` به جای (یا در کنار) کلمه کلیدی `class` تعریف می‌شوند. این کار می‌تواند کل شیء را تغییرناپذیر کند و باعث می‌شود شیء هنگام مقایسه، رفتاری شبیه به یک «مقدار» (Value) داشته باشد. ما در فصل ۶، *«پیاده‌سازی اینترفیس‌ها و ارث‌بری کلاس‌ها»*، درباره تساوی و مقایسه کلاس‌ها، رکوردها و انواع مقداری (Value Types) با جزئیات بیشتری بحث خواهیم کرد.
+
+رکوردهای تغییرناپذیر نباید هیچ وضعیت (State شامل ویژگی‌ها و فیلدها) قابل تغییری پس از نمونه‌سازی داشته باشند. در عوض، ایده اصلی این است که شما رکوردهای جدیدی را از روی رکوردهای موجود ایجاد کنید؛ به‌طوری که رکورد جدید دارای وضعیتِ تغییریافته باشد. به این کار **جهش غیرمخرب (Non-destructive Mutation)** می‌گویند. برای انجام این کار، سی‌شارپ ۹ کلمه کلیدی `with` را معرفی کرد:
+
+1. در فایل **Records.cs**، یک رکورد به نام `ImmutableVehicle` بعد از کلاس `ImmutablePerson` اضافه کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+public record ImmutableVehicle
+{
+  public int Wheels { get; init; }
+  public string? Color { get; init; }
+  public string? Brand { get; init; }
+}
+
+```
+
+2. در فایل **Program.cs**، دستوراتی را برای ایجاد یک ماشین (`car`) و سپس یک نسخه جهش‌یافته (کپی تغییریافته) از آن اضافه کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+ImmutableVehicle car = new() 
+{
+  Brand = "Mazda MX-5 RF",
+  Color = "Soul Red Crystal Metallic",
+  Wheels = 4
+};
+
+ImmutableVehicle repaintedCar = car 
+  with { Color = "Polymetal Grey Metallic" }; 
+
+WriteLine($"Original car color was {car.Color}.");
+WriteLine($"New car color is {repaintedCar.Color}.");
+
+```
+
+3. پروژه **PeopleApp** را اجرا کنید تا نتایج را مشاهده کنید و به تغییر رنگ ماشین در نسخه کپی جهش‌یافته توجه کنید؛ همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+Original car color was Soul Red Crystal Metallic.
+New car color is Polymetal Grey Metallic.
+
+```
+
+> شما حتی می‌توانید حافظه اختصاص‌داده‌شده به متغیر `car` را آزاد کنید، اما متغیر `repaintedCar` همچنان به طور کامل و مستقل وجود خواهد داشت.
+
+---
+
+### تساوی در انواع داده‌ای رکورد (Equality of record types)
+
+یکی از مهم‌ترین رفتارهای انواع داده‌ای رکورد، نحوه بررسی تساوی (Equality) در آن‌هاست. دو رکورد با مقادیر ویژگی کاملاً یکسان، «مساوی» در نظر گرفته می‌شوند. این موضوع شاید عجیب به نظر نرسد، اما اگر به جای رکورد از یک کلاس معمولی استفاده می‌کردید، آن‌ها مساوی در نظر گرفته نمی‌شدند. بیایید این موضوع را بررسی کنیم:
+
+1. در پروژه **PacktLibraryModern**، فایل جدیدی به نام **Equality.cs** ایجاد کنید.
+2. در فایل **Equality.cs**، یک کلاس و یک رکورد تعریف کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+namespace Packt.Shared;
+
+public class AnimalClass
+{
+  public string? Name { get; set; }
+}
+
+public record AnimalRecord
+{
+  public string? Name { get; set; }
+}
+
+```
+
+3. در فایل **Program.cs**، دستوراتی را برای ایجاد دو نمونه (Instance) از `AnimalClass` و دو نمونه از `AnimalRecord` اضافه کرده و سپس آن‌ها را از نظر تساوی با یکدیگر مقایسه کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+AnimalClass ac1 = new() { Name = "Rex" };
+AnimalClass ac2 = new() { Name = "Rex" };
+WriteLine($"ac1 == ac2: {ac1 == ac2}");
+
+AnimalRecord ar1 = new() { Name = "Rex" };
+AnimalRecord ar2 = new() { Name = "Rex" };
+WriteLine($"ar1 == ar2: {ar1 == ar2}");
+
+```
+
+4. پروژه **PeopleApp** را اجرا کنید تا نتایج را مشاهده کنید. توجه داشته باشید که دو نمونه از کلاس، حتی اگر مقادیر ویژگی‌های یکسانی داشته باشند با هم مساوی نیستند، اما دو نمونه از رکورد در صورت داشتن مقادیر ویژگی یکسان، با هم مساوی هستند؛ همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+ac1 == ac2: False
+ar1 == ar2: True
+
+```
+
+نمونه‌های یک کلاس تنها زمانی با هم مساوی هستند که لغتاً (اصطلاحاً اشاره‌گرِ) آن‌ها به یک شیء واحد اشاره کند. این حالت زمانی رخ می‌دهد که آدرس‌های حافظه آن‌ها با هم برابر باشد. شما در فصل ۶، *«پیاده‌سازی اینترفیس‌ها و ارث‌بری کلاس‌ها»*، درباره تساوی انواع داده‌ها بیشتر خواهید آموخت.
+
+---
+
+### اعضای داده‌ای موقعیتی در رکوردها (Positional data members in records)
+
+نحوِ تعریف یک رکورد را می‌توان با استفاده از **اعضای داده‌ای موقعیتی (Positional Data Members)** بسیار ساده‌تر کرد. گاهی اوقات ممکن است ترجیح دهید به جای استفاده از نحوِ مقداردهی اولیه شیء با استفاده از آکولاژ (`{ }`)، یک سازنده (Constructor) با پارامترهای موقعیتی فراهم کنید؛ مشابه آنچه پیش‌تر در همین فصل مشاهده کردید. همچنین می‌توانید این قابلیت را با یک واساز (Deconstructor) ترکیب کنید تا شیء را به بخش‌های مجزا تقسیم نمایید، همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+public record ImmutableAnimal
+{
+  public string Name { get; init; } 
+  public string Species { get; init; }
+
+  public ImmutableAnimal(string name, string species)
+  {
+    Name = name;
+    Species = species;
+  }
+
+  public void Deconstruct(out string name, out string species)
+  {
+    name = Name;
+    species = Species;
+  }
+}
+
+```
+
+این ویژگی‌ها، سازنده و واساز می‌توانند به طور خودکار برای شما تولید شوند:
+
+1. در فایل **Records.cs**، دستوراتی را برای تعریف یک رکورد دیگر با استفاده از نحوِ ساده‌شده‌ای که به عنوان **رکوردهای موقعیتی (Positional Records)** شناخته می‌شود، اضافه کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+// نحوی ساده‌تر برای تعریف یک رکورد که ویژگی‌ها، 
+// سازنده و واساز را به صورت خودکار تولید می‌کند.
+public record ImmutableAnimal(string Name, string Species);
+
+```
+
+2. در فایل **Program.cs**، دستوراتی را برای ساختن (Construct) و واسازی (Deconstruct) حیوانات تغییرناپذیر اضافه کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+ImmutableAnimal oscar = new("Oscar", "Labrador");
+var (who, what) = oscar; // متد Deconstruct را فراخوانی می‌کند.
+WriteLine($"{who} is a {what}.");
+
+```
+
+3. پروژه **PeopleApp** را اجرا کنید و نتایج را مشاهده کنید؛ همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+Oscar is a Labrador.
+
+```
+
+شما بار دیگر با رکوردها مواجه خواهید شد؛ آن‌هم زمانی که در فصل ۶، *«پیاده‌سازی اینترفیس‌ها و ارث‌بری کلاس‌ها»*، به پشتیبانی سی‌شارپ ۱۰ از ساخت رکوردها در قالب ساختارها (`struct records`) بپردازیم.
+
+> **اطلاعات بیشتر:** روش‌های بسیار زیاد دیگری برای استفاده از رکوردها در پروژه‌هایتان وجود دارد. توصیه می‌کنم مستندات رسمی را در لینک زیر مرور کنید:
+> [https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/records](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/records)
+
+---
+
+### تعریف سازنده اولیه (Primary Constructor) برای یک کلاس
+
+این قابلیت که از سی‌شارپ ۱۱۲ معرفی شده است، به شما اجازه می‌دهد تا یک سازنده را به عنوان بخشی از تعریف خودِ کلاس مشخص کنید. به این سازنده، **سازنده اولیه (Primary Constructor)** می‌گویند. نحوِ نگارش آن مشابه اعضای داده‌ای موقعیتی در رکوردها است، اما رفتار آن کمی تفاوت دارد.
+
+به طور سنتی، ما تعریف کلاس را از سازنده‌های آن جدا می‌کنیم؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+public class Headset // تعریف کلاس
+{
+  // سازنده
+  public Headset(string manufacturer, string productName)
+  {
+    // شما می‌توانید به پارامترهای manufacturer و productName 
+    // در سازنده و بقیه بخش‌های کلاس ارجاع دهید.
+  }
+}
+
+```
+
+با استفاده از سازنده‌های اولیه کلاس، شما هر دو بخش را در یک نحوِ بسیار مختصرتر ترکیب می‌کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+public class Headset(string manufacturer, string productName);
+
+```
+
+بیایید یک مثال را بررسی کنیم:
+
+1. در پروژه **PacktLibraryModern**، یک فایل کلاس به نام **Headset.cs** اضافه کنید.
+2. محتوای این فایل کد را تغییر دهید تا کلاس دو پارامتر به ترتیب برای نام سازنده (Manufacturer) و نام محصول (Product Name) دریافت کند؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+namespace Packt.Shared;
+
+public class Headset(string manufacturer, string productName);
+
+```
+
+3. در فایل **Program.cs**، دستوراتی را برای نمونه‌سازی یک هدست اضافه کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+Headset vp = new("Apple", "Vision Pro");
+WriteLine($"{vp.ProductName} is made by {vp.Manufacturer}.");
+
+```
+
+> **نکته:** یکی از تفاوت‌های بین یک نوع داده‌ای رکورد و یک کلاس مجهز به سازنده اولیه این است که پارامترهای سازنده اولیه کلاس به صورت خودکار به ویژگی‌های عمومی (Public Properties) تبدیل نمی‌شوند؛ بنابراین شما با خطای کامپایلر **CS1061** مواجه خواهید شد. در کد بالا، نه `ProductName` و نه `productName` در خارج از کلاس قابل دسترسی نیستند.
+
+---
+
+4. در فایل **Headset.cs**، دستوراتی را برای تعریف دو ویژگی و مقداردهی آن‌ها با استفاده از پارامترهای پاس داده‌شده به سازنده اولیه اضافه کنید؛ همان‌طور که در کد زیر برجسته (هایلایت) شده است:
+
+```csharp
+namespace Packt.Shared;
+
+public class Headset(string manufacturer, string productName)
+{
+  public string Manufacturer { get; set; } = manufacturer;
+  public string ProductName { get; set; } = productName;
+}
+
+```
+
+5. پروژه **PeopleApp** را اجرا کنید و نتایج را مشاهده کنید؛ همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+Vision Pro is made by Apple.
+
+```
+
+6. در فایل **Headset.cs**، یک سازنده پیش‌فرضِ بدون پارامتر اضافه کنید؛ همان‌طور که در کد زیر برجسته شده است:
+
+```csharp
+namespace Packt.Shared;
+
+public class Headset(string manufacturer, string productName)
+{
+  public string Manufacturer { get; set; } = manufacturer;
+  public string ProductName { get; set; } = productName;
+
+  // سازنده پیش‌فرض بدون پارامتر، سازنده اولیه را فراخوانی می‌کند.
+  public Headset() : this("Microsoft", "HoloLens") { }
+}
+
+```
+
+7. در فایل **Program.cs**، یک نمونه مقداردهی‌نشده از هدست و همچنین یک نمونه برای *Meta Quest 3* ایجاد کنید؛ همان‌طور که در کد زیر نشان داده شده است:
+
+```csharp
+Headset holo = new();
+WriteLine($"{holo.ProductName} is made by {holo.Manufacturer}.");
+
+Headset mq = new() { Manufacturer = "Meta", ProductName = "Quest 3" };
+WriteLine($"{mq.ProductName} is made by {mq.Manufacturer}.");
+
+```
+
+8. پروژه **PeopleApp** را اجرا کنید و نتایج را مشاهده کنید؛ همان‌طور که در خروجی زیر نشان داده شده است:
+
+```text
+Vision Pro is made by Apple.
+HoloLens is made by Microsoft.
+Quest 3 is made by Meta.
+
+```
+
+> **اطلاعات بیشتر:** شما می‌توانید درباره سازنده‌های اولیه برای کلاس‌ها و ساختارها (Structs) در لینک زیر اطلاعات بیشتری کسب کنید:
+> [https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/primary-constructors](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/primary-constructors)
+
+---
+
+### تمرین و کاوش (Practicing and exploring)
+
+دانش و درک خود را با پاسخ دادن به چند سؤال، انجام چند تمرین عملی و کاوش بیشتر در موضوعات این فصل با تحقیقات عمیق‌تر بسنجید.
+
+#### تمرین ۵.۱ – دانش خود را بسنجید
+
+به سؤالات زیر پاسخ دهید:
+
+1. هفت کلمه کلیدی اصلاح‌کننده دسترسی (Access Modifier) و ترکیب‌های آن‌ها کدامند و چه کاری انجام می‌دهند؟
+2. تفاوت بین کلمات کلیدی `static` ،`const` و `readonly` هنگام اعمال روی یک عضو از نوع داده چیست؟
+3. یک سازنده (Constructor) چه کاری انجام می‌دهد؟
+4. چرا وقتی می‌خواهید مقادیر ترکیبی را ذخیره کنید، باید ویژگی `[Flags]` را روی یک نوع داده `enum` اعمال کنید؟
+5. چرا کلمه کلیدی `partial` مفید است؟
+6. تاپل (Tuple) چیست؟
+7. کلمه کلیدی `record` چه کاری انجام می‌دهد؟
+8. اورلود کردن (Overloading) به چه معناست؟
+9. تفاوت بین دو دستور زیر چیست؟ (فقط به وجود کاراکتر «`<`» اشاره نکنید!)
+```csharp
+public List<Person> Children = new();
+public List<Person> Children => new();
+
+```
+
+
+10. چگونه یک پارامتر متد را اختیاری (Optional) می‌کنید؟
+
+#### تمرین ۵.۲ – تمرین با اصلاح‌کننده‌های دسترسی
+
+تصور کنید که شما کامپایلر هستید. هنگام بیلد کردن پروژه‌های زیر، چه خطاهایی را نشان می‌دادید؟ برای رفع خطا چه چیزی باید تغییر کند؟
+
+در یک پروژه کلاس لایبرری (Class Library)، در فایل **Car.cs**:
+
+```csharp
+class Car
+{
+  int Wheels { get; set; }
+  public bool IsEV { get; set; }
+  internal void Start()
+  {
+    Console.WriteLine("Starting...");
+  }
+}
+
+```
+
+در یک پروژه برنامه کنسول که به پروژه کلاس لایبرری ارجاع دارد، در فایل **Program.cs**:
+
+```csharp
+Car fiat = new() { Wheels = 4, IsEV = true };
+fiat.Start();
+
+```
+
+#### تمرین ۵.۳ – کاوش در موضوعات
+
+از لینک‌های موجود در صفحه زیر استفاده کنید تا جزئیات بیشتری درباره موضوعات پوشش داده‌شده در این فصل به دست آورید:
+[https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-5--building-your-own-types-with-object-oriented-programming](https://www.google.com/search?q=https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md%23chapter-5--building-your-own-types-with-object-oriented-programming)
+
+---
+
+### خلاصه (Summary)
+
+در این فصل، شما با موارد زیر آشنا شدید:
+
+* ساخت انواع داده اختصاصی خود با استفاده از برنامه‌نویسی شیءگرایی (OOP).
+* برخی از دسته‌بندی‌های مختلف اعضا که یک نوع داده می‌تواند داشته باشد، از جمله فیلدها برای ذخیره داده‌ها و متدها برای انجام عملیات.
+* مفاهیم شیءگرایی مانند تجمع (Aggregation) و کپسوله‌سازی (Encapsulation).
+* نحوه استفاده از ویژگی‌های مدرن سی‌شارپ، مانند بهبودهای الگوی تطبیق ویژگی و مقایسه‌ای، ویژگی‌های فقط-مقداردهی اولیه و انواع داده رکورد.
+
+در فصل بعدی، با تعریف اپراتورها، دلیگیت‌ها (Delegates) و رویدادها (Events)، پیاده‌سازی اینترفیس‌ها و ارث‌بری از کلاس‌های موجود، این مفاهیم را فراتر خواهید برد.
